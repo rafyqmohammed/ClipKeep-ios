@@ -18,12 +18,14 @@ final class ClipItem {
     var contentData: Data    // Le contenu brut (texte converti en Data ou Image)
     var type: ClipType       // Pour savoir comment l'afficher
     var createdAt: Date
-    
+    var isPinned: Bool
+
     init(contentData: Data, type: ClipType) {
         self.id = UUID()
         self.contentData = contentData
         self.type = type
         self.createdAt = Date()
+        self.isPinned = false
     }
     
     // Helper pour récupérer le texte facilement

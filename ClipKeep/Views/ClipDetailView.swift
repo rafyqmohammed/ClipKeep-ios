@@ -9,15 +9,13 @@ import SwiftUI
 
 struct ClipDetailView: View {
     @Environment(ClipboardStore.self) var clipboardStore
-    @Environment(\.dismiss) var dismiss
     @State private var copied = false
 
     let clip: ClipItem
 
     
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 20) {
+        VStack(spacing: 20) {
                 // Display content based on type
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Contenu")
@@ -94,14 +92,6 @@ struct ClipDetailView: View {
             }
             .navigationTitle("Détails")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Fermer") {
-                        dismiss()
-                    }
-                }
-            }
-        }
     }
     
     private func copyToClipboard() {

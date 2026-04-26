@@ -60,5 +60,37 @@ class ClipboardStore {
         let newItem = ClipItem(contentData: data, type: type)
         context.insert(newItem)
         try? context.save()
+        cleanupIfNeeded(context: context)
+    }
+
+    func cleanupIfNeeded(context: ModelContext) {
+        let retentionDays = UserDefaults.standard.integer(forKey: "retentionDays")
+        let maxItems = UserDefaults.standard.integer(forKey: "maxItems")
+        guard retentionDays > 0 || maxItems > 0 else { return }
+
+        let descriptor = FetchDescriptor<ClipItem>(sortBy: [SortDescriptor(\ClipItem.createdAt, order: .reverse)])
+        guard let all = try? context.fetch(descriptor) else { return }
+
+        var changed = false
+
+        if retentionDays > 0 {
+            let cutoff = Calendar.current.date(byAdding: .day, value: -retentionDays, to: Date()) ?? Date.distantPast
+            for item in all where !item.isPinned && item.createdAt < cutoff {
+                context.delete(item)
+                changed = true
+            }
+        }
+
+        if maxItems > 0 {
+            let nonPinned = all.filter { !$0.isPinned }
+            if nonPinned.count > maxItems {
+                for item in nonPinned.dropFirst(maxItems) {
+                    context.delete(item)
+                    changed = true
+                }
+            }
+        }
+
+        if changed { try? context.save() }
     }
 }
