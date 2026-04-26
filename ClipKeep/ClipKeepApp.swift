@@ -18,7 +18,14 @@ struct ClipKeepApp: App {
         do {
             modelContainer = try ModelContainer(for: ClipItem.self)
         } catch {
-            fatalError("Could not initialize ModelContainer: \(error)")
+            // Le schéma a changé (ex. nouveau champ) : on supprime l'ancien store et on recrée
+            let storeURL = ModelConfiguration().url
+            try? FileManager.default.removeItem(at: storeURL)
+            do {
+                modelContainer = try ModelContainer(for: ClipItem.self)
+            } catch {
+                fatalError("Could not initialize ModelContainer: \(error)")
+            }
         }
     }
 
@@ -27,7 +34,7 @@ struct ClipKeepApp: App {
             ContentView()
                 .modelContainer(modelContainer)
                 .environment(clipboardStore)  // injecte dans l'environnement
-                .onReceive(Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()) { _ in
+                .onReceive(Timer.publish(every: 1.5, on: .main, in: .common).autoconnect()) { _ in
                     Task {
                         clipboardStore.checkClipboard(context: modelContainer.mainContext)
                     }

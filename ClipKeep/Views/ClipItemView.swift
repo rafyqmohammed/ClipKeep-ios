@@ -26,8 +26,15 @@ struct ClipItemView: View {
             VStack(alignment: .leading) {
                 Text(item.type == .image ? "Image enregistrée" : item.textValue)
                     .lineLimit(2)
-                Text(item.createdAt, style: .time)
-                    .font(.caption2).foregroundColor(.secondary)
+                HStack(spacing: 4) {
+                    Text(item.createdAt, style: .time)
+                        .font(.caption2).foregroundColor(.secondary)
+                    if item.isPinned {
+                        Image(systemName: "pin.fill")
+                            .font(.caption2)
+                            .foregroundColor(.orange)
+                    }
+                }
             }
         }
     }
