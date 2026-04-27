@@ -23,9 +23,19 @@ struct ClipItemView: View {
                     .foregroundColor(.blue)
             }
             
-            VStack(alignment: .leading) {
-                Text(item.type == .image ? "Image enregistrée" : item.textValue)
-                    .lineLimit(2)
+            VStack(alignment: .leading, spacing: 2) {
+                if item.type == .url, let host = URL(string: item.textValue)?.host {
+                    Text(host)
+                        .fontWeight(.medium)
+                        .lineLimit(1)
+                    Text(item.textValue)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                } else {
+                    Text(item.type == .image ? "Image enregistrée" : item.textValue)
+                        .lineLimit(2)
+                }
                 HStack(spacing: 4) {
                     Text(item.createdAt, style: .time)
                         .font(.caption2).foregroundColor(.secondary)

@@ -11,9 +11,14 @@ import SwiftData
 struct ClipListView: View {
     @Query(sort: \ClipItem.createdAt, order: .reverse) var clips: [ClipItem]
     @Environment(\.modelContext) var modelContext
+    @Environment(ClipboardStore.self) var clipboardStore
     @State private var showSettings = false
     @State private var searchText = ""
     @State private var filterType: ClipType? = nil
+    @State private var isSelecting = false
+    @State private var selectedIDs: Set<UUID> = []
+
+    // MARK: - Computed
 
     private var displayedClips: [ClipItem] {
         let filtered = clips.filter { clip in
@@ -34,6 +39,12 @@ struct ClipListView: View {
         }
     }
 
+    private var selectedClips: [ClipItem] {
+        displayedClips.filter { selectedIDs.contains($0.id) }
+    }
+
+    // MARK: - Body
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -53,32 +64,10 @@ struct ClipListView: View {
                         } else {
                             List {
                                 ForEach(displayedClips) { clip in
-                                    NavigationLink(destination: ClipDetailView(clip: clip)) {
-                                        ClipItemView(item: clip)
-                                    }
-                                    .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                                        Button {
-                                            withAnimation {
-                                                clip.isPinned.toggle()
-                                                try? modelContext.save()
-                                            }
-                                        } label: {
-                                            Label(
-                                                clip.isPinned ? "Désépingler" : "Épingler",
-                                                systemImage: clip.isPinned ? "pin.slash" : "pin"
-                                            )
-                                        }
-                                        .tint(.orange)
-                                    }
-                                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                        Button(role: .destructive) {
-                                            withAnimation {
-                                                modelContext.delete(clip)
-                                                try? modelContext.save()
-                                            }
-                                        } label: {
-                                            Label("Supprimer", systemImage: "trash")
-                                        }
+                                    if isSelecting {
+                                        selectionRow(clip)
+                                    } else {
+                                        navigationRow(clip)
                                     }
                                 }
                             }
@@ -88,19 +77,170 @@ struct ClipListView: View {
                     }
                 }
             }
-            .navigationTitle("ClipKeep")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { showSettings = true }) {
+            .navigationTitle(isSelecting
+                ? "\(selectedIDs.count) sélectionné(s)"
+                : "ClipKeep")
+            .toolbar { toolbarContent }
+            .sheet(isPresented: $showSettings) {
+                SettingsView()
+            }
+            .animation(.easeInOut(duration: 0.2), value: isSelecting)
+        }
+    }
+
+    // MARK: - Rows
+
+    @ViewBuilder
+    private func navigationRow(_ clip: ClipItem) -> some View {
+        NavigationLink(destination: ClipDetailView(clip: clip)) {
+            ClipItemView(item: clip)
+        }
+        .contextMenu {
+            Button { copyClip(clip) } label: {
+                Label("Copier", systemImage: "doc.on.doc")
+            }
+            shareMenuButton(for: clip)
+            Divider()
+            Button {
+                withAnimation { clip.isPinned.toggle(); try? modelContext.save() }
+            } label: {
+                Label(
+                    clip.isPinned ? "Désépingler" : "Épingler",
+                    systemImage: clip.isPinned ? "pin.slash" : "pin"
+                )
+            }
+            Divider()
+            Button(role: .destructive) {
+                withAnimation { modelContext.delete(clip); try? modelContext.save() }
+            } label: {
+                Label("Supprimer", systemImage: "trash")
+            }
+        }
+        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+            Button {
+                withAnimation { clip.isPinned.toggle(); try? modelContext.save() }
+            } label: {
+                Label(clip.isPinned ? "Désépingler" : "Épingler",
+                      systemImage: clip.isPinned ? "pin.slash" : "pin")
+            }
+            .tint(.orange)
+        }
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+            Button(role: .destructive) {
+                withAnimation { modelContext.delete(clip); try? modelContext.save() }
+            } label: {
+                Label("Supprimer", systemImage: "trash")
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func selectionRow(_ clip: ClipItem) -> some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                if selectedIDs.contains(clip.id) { selectedIDs.remove(clip.id) }
+                else { selectedIDs.insert(clip.id) }
+            }
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: selectedIDs.contains(clip.id)
+                      ? "checkmark.circle.fill" : "circle")
+                    .font(.title3)
+                    .foregroundColor(selectedIDs.contains(clip.id) ? .accentColor : .secondary)
+                ClipItemView(item: clip)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Share helper (contextMenu)
+
+    @ViewBuilder
+    private func shareMenuButton(for clip: ClipItem) -> some View {
+        if clip.type == .url, let url = URL(string: clip.textValue) {
+            ShareLink(item: url) {
+                Label("Partager", systemImage: "square.and.arrow.up")
+            }
+        } else if clip.type == .image, let uiImage = UIImage(data: clip.contentData) {
+            ShareLink(
+                item: Image(uiImage: uiImage),
+                preview: SharePreview("Image", image: Image(uiImage: uiImage))
+            ) {
+                Label("Partager", systemImage: "square.and.arrow.up")
+            }
+        } else {
+            ShareLink(item: clip.textValue) {
+                Label("Partager", systemImage: "square.and.arrow.up")
+            }
+        }
+    }
+
+    // MARK: - Toolbar
+
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        if isSelecting {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button("Annuler") {
+                    isSelecting = false
+                    selectedIDs.removeAll()
+                }
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                HStack(spacing: 16) {
+                    let shareableTexts = selectedClips
+                        .filter { $0.type != .image }
+                        .map { $0.textValue }
+                    if !shareableTexts.isEmpty {
+                        ShareLink(items: shareableTexts) {
+                            Image(systemName: "square.and.arrow.up")
+                        }
+                    }
+                    Button(role: .destructive) {
+                        deleteSelected()
+                    } label: {
+                        Image(systemName: "trash")
+                    }
+                    .disabled(selectedIDs.isEmpty)
+                }
+            }
+        } else {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                HStack(spacing: 16) {
+                    Button {
+                        withAnimation { isSelecting = true }
+                    } label: {
+                        Image(systemName: "checkmark.circle")
+                    }
+                    Button { showSettings = true } label: {
                         Image(systemName: "gear")
                     }
                 }
             }
-            .sheet(isPresented: $showSettings) {
-                SettingsView()
-            }
         }
     }
+
+    // MARK: - Actions
+
+    private func copyClip(_ clip: ClipItem) {
+        clipboardStore.isInternalCopy = true
+        if clip.type == .image, let uiImage = UIImage(data: clip.contentData) {
+            UIPasteboard.general.image = uiImage
+        } else {
+            UIPasteboard.general.string = clip.textValue
+        }
+    }
+
+    private func deleteSelected() {
+        withAnimation {
+            for clip in selectedClips { modelContext.delete(clip) }
+            try? modelContext.save()
+            selectedIDs.removeAll()
+            isSelecting = false
+        }
+    }
+
+    // MARK: - Empty states
 
     private var emptyStateView: some View {
         VStack(spacing: 20) {
@@ -146,16 +286,12 @@ private struct SearchField: View {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.secondary)
                     .font(.subheadline)
-
                 TextField("Rechercher dans l'historique…", text: $text)
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
                     .focused($focused)
-
                 if !text.isEmpty {
-                    Button {
-                        text = ""
-                    } label: {
+                    Button { text = "" } label: {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(.secondary)
                             .font(.subheadline)
