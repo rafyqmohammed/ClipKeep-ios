@@ -18,7 +18,7 @@ struct ClipKeepApp: App {
         do {
             modelContainer = try ModelContainer(for: ClipItem.self)
         } catch {
-            // Le schéma a changé (ex. nouveau champ) : on supprime l'ancien store et on recrée
+            // Schema incompatibility — wipe the store and recreate
             let storeURL = ModelConfiguration().url
             try? FileManager.default.removeItem(at: storeURL)
             do {
@@ -33,7 +33,7 @@ struct ClipKeepApp: App {
         WindowGroup {
             ContentView()
                 .modelContainer(modelContainer)
-                .environment(clipboardStore)  // injecte dans l'environnement
+                .environment(clipboardStore)
                 .onReceive(Timer.publish(every: 1.5, on: .main, in: .common).autoconnect()) { _ in
                     Task {
                         clipboardStore.checkClipboard(context: modelContainer.mainContext)

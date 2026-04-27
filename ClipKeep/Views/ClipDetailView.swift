@@ -13,73 +13,80 @@ struct ClipDetailView: View {
 
     let clip: ClipItem
 
-    
     var body: some View {
-        VStack(spacing: 20) {
-                // Display content based on type
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Contenu")
-                        .font(.headline)
+        VStack(spacing: 16) {
+
+            // Content section
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Contenu")
+                    .font(.headline)
+                    .padding(.horizontal)
+
+                // Rich URL preview card
+                if clip.type == .url, let url = URL(string: clip.textValue) {
+                    LinkPreviewView(url: url)
                         .padding(.horizontal)
-                    
-                    ScrollView {
-                        if clip.type == .image, let uiImage = UIImage(data: clip.contentData) {
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .scaledToFit()
-                                .cornerRadius(12)
-                                .padding()
-                        } else {
-                            Text(clip.textValue)
-                                .textSelection(.enabled)
-                                .padding()
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .background(Color.gray.opacity(0.1))
-                                .cornerRadius(8)
-                                .padding(.horizontal)
-                        }
-                    }
-                    .frame(maxHeight: .infinity)
                 }
-                
-                // Info section
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("Type:")
-                            .foregroundColor(.secondary)
-                        Spacer()
-                        Text(clip.type.rawValue.capitalized)
-                            .fontWeight(.semibold)
-                    }
-                    
-                    HStack {
-                        Text("Crée le:")
-                            .foregroundColor(.secondary)
-                        Spacer()
-                        Text(clip.createdAt.formatted(date: .abbreviated, time: .standard))
-                            .fontWeight(.semibold)
-                    }
-                    
-                    if clip.type != .image {
-                        HStack {
-                            Text("Taille:")
-                                .foregroundColor(.secondary)
-                            Spacer()
-                            Text("\(clip.contentData.count) bytes")
-                                .fontWeight(.semibold)
-                        }
+
+                ScrollView {
+                    if clip.type == .image, let uiImage = UIImage(data: clip.contentData) {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .scaledToFit()
+                            .cornerRadius(12)
+                            .padding()
+                    } else {
+                        Text(clip.textValue)
+                            .textSelection(.enabled)
+                            .font(clip.type == .url ? .footnote : .body)
+                            .foregroundColor(clip.type == .url ? .secondary : .primary)
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(8)
+                            .padding(.horizontal)
                     }
                 }
-                .padding()
-                .background(Color.gray.opacity(0.05))
-                .cornerRadius(8)
-                .padding()
-                
-                // Copy button
+                .frame(maxHeight: clip.type == .url ? 70 : .infinity)
+            }
+
+            // Info section
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("Type:")
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text(clip.type.rawValue.capitalized)
+                        .fontWeight(.semibold)
+                }
+                HStack {
+                    Text("Crée le:")
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text(clip.createdAt.formatted(date: .abbreviated, time: .standard))
+                        .fontWeight(.semibold)
+                }
+                if clip.type != .image {
+                    HStack {
+                        Text("Taille:")
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Text("\(clip.contentData.count) bytes")
+                            .fontWeight(.semibold)
+                    }
+                }
+            }
+            .padding()
+            .background(Color.gray.opacity(0.05))
+            .cornerRadius(8)
+            .padding(.horizontal)
+
+            // Action buttons
+            HStack(spacing: 12) {
                 Button(action: copyToClipboard) {
                     HStack {
                         Image(systemName: copied ? "checkmark" : "doc.on.doc")
-                        Text(copied ? "Copié!" : "Copier")
+                        Text(copied ? "Copié !" : "Copier")
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -88,23 +95,53 @@ struct ClipDetailView: View {
                     .cornerRadius(8)
                 }
                 .disabled(copied)
-                .padding()
+
+                shareButton
             }
-            .navigationTitle("Détails")
-            .navigationBarTitleDisplayMode(.inline)
+            .padding(.horizontal)
+            .padding(.bottom)
+        }
+        .navigationTitle("Détails")
+        .navigationBarTitleDisplayMode(.inline)
     }
-    
+
+    // MARK: - Share
+
+    @ViewBuilder
+    private var shareButton: some View {
+        if clip.type == .url, let url = URL(string: clip.textValue) {
+            ShareLink(item: url) { shareLabel }
+        } else if clip.type == .image, let uiImage = UIImage(data: clip.contentData) {
+            ShareLink(
+                item: Image(uiImage: uiImage),
+                preview: SharePreview("Image", image: Image(uiImage: uiImage))
+            ) { shareLabel }
+        } else {
+            ShareLink(item: clip.textValue) { shareLabel }
+        }
+    }
+
+    private var shareLabel: some View {
+        HStack {
+            Image(systemName: "square.and.arrow.up")
+            Text("Partager")
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(Color(.systemGray5))
+        .foregroundColor(.primary)
+        .cornerRadius(8)
+    }
+
+    // MARK: - Copy
+
     private func copyToClipboard() {
         clipboardStore.isInternalCopy = true
-
         if clip.type == .image, let uiImage = UIImage(data: clip.contentData) {
-            // Copie l'image dans le presse-papier
             UIPasteboard.general.image = uiImage
         } else {
-            // Copie le texte / URL
             UIPasteboard.general.string = clip.textValue
         }
-
         copied = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             copied = false
