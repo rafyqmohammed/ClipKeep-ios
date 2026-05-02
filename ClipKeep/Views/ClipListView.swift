@@ -17,6 +17,7 @@ struct ClipListView: View {
     @State private var filterType: ClipType? = nil
     @State private var isSelecting = false
     @State private var selectedIDs: Set<UUID> = []
+    @State private var isExportingPDF = false
 
     // MARK: - Computed
 
@@ -85,6 +86,24 @@ struct ClipListView: View {
                 SettingsView()
             }
             .animation(.easeInOut(duration: 0.2), value: isSelecting)
+            .overlay {
+                if isExportingPDF {
+                    ZStack {
+                        Color.black.opacity(0.4).ignoresSafeArea()
+                        VStack(spacing: 14) {
+                            ProgressView()
+                                .scaleEffect(1.3)
+                                .tint(.white)
+                            Text("Génération du PDF…")
+                                .font(.subheadline.weight(.medium))
+                                .foregroundColor(.white)
+                        }
+                        .padding(28)
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(18)
+                    }
+                }
+            }
         }
     }
 
@@ -188,14 +207,30 @@ struct ClipListView: View {
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 HStack(spacing: 16) {
-                    let shareableTexts = selectedClips
-                        .filter { $0.type != .image }
-                        .map { $0.textValue }
-                    if !shareableTexts.isEmpty {
-                        ShareLink(items: shareableTexts) {
+                    let textClips = selectedClips.filter { $0.type != .image }
+                    if !textClips.isEmpty {
+                        Button {
+                            let content = formattedShareContent(for: textClips)
+                            ActivityShareSheet.present(items: [content]) { completed in
+                                if completed {
+                                    self.selectedIDs.removeAll()
+                                    self.isSelecting = false
+                                }
+                            }
+                        } label: {
                             Image(systemName: "square.and.arrow.up")
                         }
                     }
+                    Button {
+                        exportSelectedAsPDF()
+                    } label: {
+                        if isExportingPDF {
+                            ProgressView().scaleEffect(0.75)
+                        } else {
+                            Image(systemName: "arrow.up.doc")
+                        }
+                    }
+                    .disabled(selectedIDs.isEmpty || isExportingPDF)
                     Button(role: .destructive) {
                         deleteSelected()
                     } label: {
@@ -222,6 +257,38 @@ struct ClipListView: View {
 
     // MARK: - Actions
 
+    private func formattedShareContent(for clips: [ClipItem]) -> String {
+        guard clips.count > 1 else { return clips[0].textValue }
+
+        let fmt = DateFormatter()
+        fmt.dateStyle = .short
+        fmt.timeStyle = .short
+        fmt.locale = Locale(identifier: "fr_FR")
+
+        return clips.map { clip in
+            let icon: String
+            let label: String
+            switch clip.type {
+            case .url:
+                icon = "🔗"; label = "Lien"
+            case .code:
+                icon = "{ }"; label = "Code"
+            case .text:
+                switch clip.detectedSubtype {
+                case .email:    icon = "✉️";  label = "Email"
+                case .phone:    icon = "📞"; label = "Téléphone"
+                case .date:     icon = "📅"; label = "Date"
+                case .colorHex: icon = "🎨"; label = "Couleur"
+                case .address:  icon = "📍"; label = "Adresse"
+                case nil:       icon = "📄"; label = "Texte"
+                }
+            case .image:
+                icon = "🖼"; label = "Image"
+            }
+            return "\(icon) \(label)  ·  \(fmt.string(from: clip.createdAt))\n\(clip.textValue)"
+        }.joined(separator: "\n\n────────\n\n")
+    }
+
     private func copyClip(_ clip: ClipItem) {
         clipboardStore.isInternalCopy = true
         if clip.type == .image, let uiImage = UIImage(data: clip.contentData) {
@@ -230,6 +297,25 @@ struct ClipListView: View {
             UIPasteboard.general.string = clip.textValue
         }
     }
+
+    private func exportSelectedAsPDF() {
+        isExportingPDF = true
+        Task { @MainActor in
+            await Task.yield()
+            let data = await PDFExporter.generate(from: selectedClips)
+            let url = FileManager.default.temporaryDirectory
+                .appendingPathComponent("ClipKeep-Selection.pdf")
+            try? data.write(to: url)
+            withAnimation { isExportingPDF = false }
+            await Task.yield()
+            ActivityShareSheet.present(items: [url]) { completed in
+                if completed {
+                    self.selectedIDs.removeAll()
+                    self.isSelecting = false
+                }
+            }
+        }
+ }
 
     private func deleteSelected() {
         withAnimation {
@@ -322,10 +408,11 @@ private struct FilterBar: View {
     @Binding var selected: ClipType?
 
     private let filters: [(label: String, icon: String, type: ClipType?)] = [
-        ("Tout",   "tray.full", nil),
-        ("Texte",  "doc.text",  .text),
-        ("Images", "photo",     .image),
-        ("Liens",  "link",      .url)
+        ("Tout",   "tray.full",                               nil),
+        ("Texte",  "doc.text",                                .text),
+        ("Code",   "chevron.left.forwardslash.chevron.right", .code),
+        ("Images", "photo",                                   .image),
+        ("Liens",  "link",                                    .url)
     ]
 
     var body: some View {

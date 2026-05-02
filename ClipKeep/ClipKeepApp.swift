@@ -17,12 +17,24 @@ struct ClipKeepApp: App {
     init() {
         do {
             modelContainer = try ModelContainer(for: ClipItem.self)
+//            
+//            // 🔍 Affiche le chemin de la base de données
+//            if let storeURL = modelContainer.configurations.first?.url {
+//                print("📁 Database Path: \(storeURL.path)")
+//                print("📁 Full URL: \(storeURL)")
+//            }
+//            
         } catch {
-            // Schema incompatibility — wipe the store and recreate
             let storeURL = ModelConfiguration().url
             try? FileManager.default.removeItem(at: storeURL)
             do {
                 modelContainer = try ModelContainer(for: ClipItem.self)
+//                
+//                // 🔍 Affiche le chemin après récréation
+//                if let storeURL = modelContainer.configurations.first?.url {
+//                    print("📁 Database Path (recreated): \(storeURL.path)")
+//                }
+//                
             } catch {
                 fatalError("Could not initialize ModelContainer: \(error)")
             }
