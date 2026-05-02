@@ -7,7 +7,7 @@
 
 import UIKit
 import SwiftData
-import Observation  // 
+import Observation
 
 @Observable  // nécessaire pour @Environment
 @MainActor
@@ -44,9 +44,25 @@ class ClipboardStore {
                 shouldShowPastePermissionPrompt = true
                 didShowPastePermissionPrompt = true
             }
-            let type: ClipType = text.hasPrefix("http") ? .url : .text
+            let type: ClipType
+            if text.hasPrefix("http") {
+                type = .url
+            } else if looksLikeCode(text) {
+                type = .code
+            } else {
+                type = .text
+            }
             insertOrPromote(data: data, type: type, context: context)
         }
+    }
+
+    private func looksLikeCode(_ text: String) -> Bool {
+        guard text.contains("\n") else { return false }
+        let keywords = ["func ", "def ", "class ", "import ", "return ",
+                        "const ", "for (", "while (", "#include",
+                        "public ", "private ", "() =>", "===", "!==", "#!/",
+                        "var ", "let ", "->", "{ }"]
+        return keywords.contains(where: { text.contains($0) })
     }
 
     private func insertOrPromote(data: Data, type: ClipType, context: ModelContext) {

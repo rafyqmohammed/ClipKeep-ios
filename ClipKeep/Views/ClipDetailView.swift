@@ -38,11 +38,13 @@ struct ClipDetailView: View {
                     } else {
                         Text(clip.textValue)
                             .textSelection(.enabled)
-                            .font(clip.type == .url ? .footnote : .body)
+                            .font(contentFont)
                             .foregroundColor(clip.type == .url ? .secondary : .primary)
                             .padding()
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(Color.gray.opacity(0.1))
+                            .background(clip.type == .code
+                                ? Color.purple.opacity(0.05)
+                                : Color.gray.opacity(0.1))
                             .cornerRadius(8)
                             .padding(.horizontal)
                     }
@@ -56,8 +58,25 @@ struct ClipDetailView: View {
                     Text("Type:")
                         .foregroundColor(.secondary)
                     Spacer()
-                    Text(clip.type.rawValue.capitalized)
+                    if clip.type == .code {
+                        HStack(spacing: 4) {
+                            Image(systemName: "chevron.left.forwardslash.chevron.right")
+                                .font(.caption)
+                            Text("Code")
+                        }
                         .fontWeight(.semibold)
+                        .foregroundColor(.purple)
+                    } else if let subtype = clip.detectedSubtype {
+                        HStack(spacing: 4) {
+                            Image(systemName: subtype.icon)
+                                .font(.caption)
+                            Text(subtype.label)
+                        }
+                        .fontWeight(.semibold)
+                    } else {
+                        Text(clip.type.rawValue.capitalized)
+                            .fontWeight(.semibold)
+                    }
                 }
                 HStack {
                     Text("Crée le:")
@@ -65,6 +84,15 @@ struct ClipDetailView: View {
                     Spacer()
                     Text(clip.createdAt.formatted(date: .abbreviated, time: .standard))
                         .fontWeight(.semibold)
+                }
+                if clip.type == .code {
+                    HStack {
+                        Text("Lignes:")
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Text("\(clip.textValue.components(separatedBy: "\n").count)")
+                            .fontWeight(.semibold)
+                    }
                 }
                 if clip.type != .image {
                     HStack {
@@ -103,6 +131,16 @@ struct ClipDetailView: View {
         }
         .navigationTitle("Détails")
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    // MARK: - Helpers
+
+    private var contentFont: Font {
+        switch clip.type {
+        case .url:  return .footnote
+        case .code: return .system(.body, design: .monospaced)
+        default:    return .body
+        }
     }
 
     // MARK: - Share

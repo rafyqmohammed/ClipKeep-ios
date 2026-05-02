@@ -7,12 +7,14 @@
 
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct SettingsView: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
-    @Query var clips: [ClipItem]
+    @Query(sort: \ClipItem.createdAt, order: .reverse) var clips: [ClipItem]
     @State private var showConfirmation = false
+    @State private var isGeneratingPDF = false
     @AppStorage("retentionDays") private var retentionDays: Int = 0
     @AppStorage("maxItems") private var maxItems: Int = 0
 
@@ -48,6 +50,18 @@ struct SettingsView: View {
                 }
                 .onChange(of: retentionDays) { _, _ in applyCleanup() }
                 .onChange(of: maxItems) { _, _ in applyCleanup() }
+
+                Section(header: Text("Export")) {
+                    Button {
+                        exportPDF()
+                    } label: {
+                        HStack {
+                            Image(systemName: "arrow.up.doc")
+                            Text("Exporter en PDF")
+                        }
+                    }
+                    .disabled(clips.isEmpty || isGeneratingPDF)
+                }
 
                 Section(header: Text("Actions")) {
                     Button(role: .destructive) {
@@ -86,6 +100,24 @@ struct SettingsView: View {
             } message: {
                 Text("Cette action supprimera tous les éléments sauvegardés. Cette opération ne peut pas être annulée.")
             }
+            .overlay {
+                if isGeneratingPDF {
+                    ZStack {
+                        Color.black.opacity(0.4).ignoresSafeArea()
+                        VStack(spacing: 14) {
+                            ProgressView()
+                                .scaleEffect(1.3)
+                                .tint(.white)
+                            Text("Génération du PDF…")
+                                .font(.subheadline.weight(.medium))
+                                .foregroundColor(.white)
+                        }
+                        .padding(28)
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(18)
+                    }
+                }
+            }
         }
     }
     
@@ -102,7 +134,22 @@ struct SettingsView: View {
         let store = ClipboardStore()
         store.cleanupIfNeeded(context: modelContext)
     }
+
+    private func exportPDF() {
+        isGeneratingPDF = true
+        Task { @MainActor in
+            await Task.yield()
+            let data = await PDFExporter.generate(from: clips)
+            let url = FileManager.default.temporaryDirectory
+                .appendingPathComponent("ClipKeep-History.pdf")
+            try? data.write(to: url)
+            withAnimation { isGeneratingPDF = false }
+            await Task.yield()
+            ActivityShareSheet.present(items: [url])
+        }
+    }
 }
+
 
 #Preview {
     SettingsView()
