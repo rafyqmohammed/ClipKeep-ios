@@ -13,7 +13,14 @@ import Observation
 @MainActor
 class ClipboardStore {
     private var lastChangeCount = UIPasteboard.general.changeCount
-    var isInternalCopy = false  // flag levé par l'app
+    var isInternalCopy = false
+    var captureToast: String? = nil
+    var isEnabled: Bool = UserDefaults.standard.object(forKey: "clipboardEnabled") as? Bool ?? true {
+        didSet {
+            UserDefaults.standard.set(isEnabled, forKey: "clipboardEnabled")
+            lastChangeCount = UIPasteboard.general.changeCount
+        }
+    }
 
     private let pastePromptKey = "didShowPastePermissionPrompt"
     var shouldShowPastePermissionPrompt = false
@@ -24,6 +31,7 @@ class ClipboardStore {
     }
 
     func checkClipboard(context: ModelContext) {
+        guard isEnabled else { return }
         guard UIPasteboard.general.changeCount != lastChangeCount else { return }
         lastChangeCount = UIPasteboard.general.changeCount
 
@@ -77,6 +85,20 @@ class ClipboardStore {
         context.insert(newItem)
         try? context.save()
         cleanupIfNeeded(context: context)
+        showCaptureToast(for: type)
+    }
+
+    private func showCaptureToast(for type: ClipType) {
+        switch type {
+        case .image: captureToast = "🖼  Image enregistrée"
+        case .url:   captureToast = "🔗  Lien enregistré"
+        case .code:  captureToast = "{ }  Code enregistré"
+        case .text:  captureToast = "📋  Texte enregistré"
+        }
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .seconds(2.5))
+            self?.captureToast = nil
+        }
     }
 
     func cleanupIfNeeded(context: ModelContext) {
