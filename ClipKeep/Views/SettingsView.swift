@@ -12,6 +12,7 @@ import UIKit
 struct SettingsView: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
+    @Environment(ClipboardStore.self) var clipboardStore
     @Query(sort: \ClipItem.createdAt, order: .reverse) var clips: [ClipItem]
     @State private var showConfirmation = false
     @State private var isGeneratingPDF = false
@@ -21,6 +22,19 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
+                Section(header: Text("Capture")) {
+                    Toggle(isOn: Binding(
+                        get: { clipboardStore.isEnabled },
+                        set: { clipboardStore.isEnabled = $0 }
+                    )) {
+                        Label(
+                            clipboardStore.isEnabled ? "Capture activée" : "Capture désactivée",
+                            systemImage: clipboardStore.isEnabled ? "doc.on.clipboard.fill" : "doc.on.clipboard"
+                        )
+                    }
+                    .tint(.green)
+                }
+
                 Section(header: Text("Informations")) {
                     HStack {
                         Text("Éléments sauvegardés")

@@ -18,6 +18,7 @@ struct ClipListView: View {
     @State private var isSelecting = false
     @State private var selectedIDs: Set<UUID> = []
     @State private var isExportingPDF = false
+    @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
 
     // MARK: - Computed
 
@@ -86,6 +87,20 @@ struct ClipListView: View {
                 SettingsView()
             }
             .animation(.easeInOut(duration: 0.2), value: isSelecting)
+            .fullScreenCover(isPresented: Binding(
+                get: { !hasSeenOnboarding },
+                set: { _ in }
+            )) {
+                OnboardingView { hasSeenOnboarding = true }
+            }
+            .overlay(alignment: .bottom) {
+                if let message = clipboardStore.captureToast {
+                    CaptureToast(message: message)
+                        .padding(.bottom, 16)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+            }
+            .animation(.spring(duration: 0.35), value: clipboardStore.captureToast)
             .overlay {
                 if isExportingPDF {
                     ZStack {
@@ -240,6 +255,23 @@ struct ClipListView: View {
                 }
             }
         } else {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        clipboardStore.isEnabled.toggle()
+                    }
+                } label: {
+                    HStack(spacing: 5) {
+                        Circle()
+                            .fill(clipboardStore.isEnabled ? Color.green : Color.red)
+                            .frame(width: 7, height: 7)
+                        Text(clipboardStore.isEnabled ? "Actif" : "Inactif")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .buttonStyle(.plain)
+            }
             ToolbarItem(placement: .navigationBarTrailing) {
                 HStack(spacing: 16) {
                     Button {
@@ -442,6 +474,26 @@ private struct FilterBar: View {
             }
             .padding(.horizontal, 16)
         }
+    }
+}
+
+// MARK: - CaptureToast
+
+private struct CaptureToast: View {
+    let message: String
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundColor(.green)
+            Text(message)
+                .font(.subheadline.weight(.medium))
+        }
+        .padding(.horizontal, 18)
+        .padding(.vertical, 12)
+        .background(.regularMaterial)
+        .clipShape(Capsule())
+        .shadow(color: .black.opacity(0.12), radius: 8, y: 4)
     }
 }
 
