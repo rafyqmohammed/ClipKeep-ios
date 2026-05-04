@@ -65,12 +65,17 @@ class ClipboardStore {
     }
 
     private func looksLikeCode(_ text: String) -> Bool {
-        guard text.contains("\n") else { return false }
-        let keywords = ["func ", "def ", "class ", "import ", "return ",
-                        "const ", "for (", "while (", "#include",
-                        "public ", "private ", "() =>", "===", "!==", "#!/",
-                        "var ", "let ", "->", "{ }"]
-        return keywords.contains(where: { text.contains($0) })
+        let multilineKeywords = ["func ", "def ", "class ", "return ",
+                                 "const ", "for (", "while (", "#include",
+                                 "public ", "private ", "() =>", "===", "!==", "#!/",
+                                 "var ", "let ", "->"]
+        let singleLineKeywords = ["import ", "print(", "console.log(", "System.out",
+                                  "cout <<", "printf(", "echo ", "SELECT ", "FROM "]
+        if text.contains("\n") {
+            return multilineKeywords.contains(where: { text.contains($0) })
+        } else {
+            return singleLineKeywords.contains(where: { text.contains($0) })
+        }
     }
 
     private func insertOrPromote(data: Data, type: ClipType, context: ModelContext) {

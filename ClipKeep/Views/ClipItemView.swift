@@ -18,9 +18,21 @@ struct ClipItemView: View {
                     .scaledToFill()
                     .frame(width: 50, height: 50)
                     .cornerRadius(8)
+            } else if item.type == .text, let color = parsedHexColor {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(color)
+                    .frame(width: 40, height: 40)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .strokeBorder(Color.primary.opacity(0.12), lineWidth: 1)
+                    )
             } else {
                 Image(systemName: rowIcon)
-                    .foregroundColor(rowIconColor)
+                    .font(.body.weight(.medium))
+                    .foregroundStyle(rowIconColor)
+                    .frame(width: 40, height: 40)
+                    .background(rowIconColor.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
             }
 
             VStack(alignment: .leading, spacing: 2) {
@@ -57,15 +69,34 @@ struct ClipItemView: View {
                             .font(.caption2)
                             .foregroundColor(.orange)
                     }
-                    if let subtype = item.detectedSubtype {
-                        subtypeBadge(subtype)
-                    }
+                    typeBadge
                 }
             }
         }
     }
 
     // MARK: - Helpers
+
+    private var parsedHexColor: Color? {
+        let raw = item.textValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard raw.hasPrefix("#") else { return nil }
+        let hex = String(raw.dropFirst())
+
+        let rgb6: String
+        switch hex.count {
+        case 3:  rgb6 = hex.map { String(repeating: String($0), count: 2) }.joined()
+        case 6:  rgb6 = hex
+        case 8:  rgb6 = String(hex.prefix(6))
+        default: return nil
+        }
+
+        guard let value = UInt32(rgb6, radix: 16) else { return nil }
+        return Color(
+            red:   Double((value >> 16) & 0xFF) / 255,
+            green: Double((value >> 8)  & 0xFF) / 255,
+            blue:  Double(value         & 0xFF) / 255
+        )
+    }
 
     private var rowIcon: String {
         switch item.type {
@@ -85,17 +116,38 @@ struct ClipItemView: View {
         }
     }
 
-    private func subtypeBadge(_ subtype: ClipSubtype) -> some View {
-        HStack(spacing: 3) {
-            Image(systemName: subtype.icon)
+    private var typeBadge: some View {
+        let label: String
+        let icon: String
+        let color: Color
+
+        if let sub = item.detectedSubtype {
+            switch sub {
+            case .email:    label = "Email";     icon = sub.icon; color = .blue
+            case .phone:    label = "Téléphone"; icon = sub.icon; color = .green
+            case .date:     label = "Date";      icon = sub.icon; color = .orange
+            case .colorHex: label = "Couleur";   icon = sub.icon; color = .pink
+            case .address:  label = "Adresse";   icon = sub.icon; color = .teal
+            }
+        } else {
+            switch item.type {
+            case .code:  label = "Code";  icon = "chevron.left.forwardslash.chevron.right"; color = .purple
+            case .url:   label = "Lien";  icon = "link";      color = .orange
+            case .image: label = "Image"; icon = "photo";     color = .green
+            case .text:  label = "Texte"; icon = "doc.text";  color = .blue
+            }
+        }
+
+        return HStack(spacing: 3) {
+            Image(systemName: icon)
                 .font(.system(size: 8))
-            Text(subtype.label)
+            Text(label)
                 .font(.system(size: 9))
         }
         .padding(.horizontal, 5)
         .padding(.vertical, 2)
-        .background(subtypeColor(subtype).opacity(0.12))
-        .foregroundColor(subtypeColor(subtype))
+        .background(color.opacity(0.12))
+        .foregroundColor(color)
         .cornerRadius(4)
     }
 
