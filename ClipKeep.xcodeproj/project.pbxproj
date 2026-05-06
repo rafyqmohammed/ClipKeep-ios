@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		9D0640AC2FAA97BA00F07094 /* ClipKeepKeyboard.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9D0640A52FAA97BA00F07094 /* ClipKeepKeyboard.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		9D53FF132FABD6050035EA8F /* SharedClipStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D53FF112FABD6050035EA8F /* SharedClipStore.swift */; };
+		9D53FF142FABD6050035EA8F /* SharedClipItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D53FF102FABD6050035EA8F /* SharedClipItem.swift */; };
+		9D53FF152FABD6050035EA8F /* SharedClipStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D53FF112FABD6050035EA8F /* SharedClipStore.swift */; };
+		9D53FF162FABD6050035EA8F /* SharedClipItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D53FF102FABD6050035EA8F /* SharedClipItem.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +40,8 @@
 
 /* Begin PBXFileReference section */
 		9D0640A52FAA97BA00F07094 /* ClipKeepKeyboard.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ClipKeepKeyboard.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		9D53FF102FABD6050035EA8F /* SharedClipItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedClipItem.swift; sourceTree = "<group>"; };
+		9D53FF112FABD6050035EA8F /* SharedClipStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedClipStore.swift; sourceTree = "<group>"; };
 		9D60C0472F83A05700E8F47E /* ClipKeep.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClipKeep.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -83,9 +89,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9D53FF122FABD6050035EA8F /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				9D53FF102FABD6050035EA8F /* SharedClipItem.swift */,
+				9D53FF112FABD6050035EA8F /* SharedClipStore.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
 		9D60C03E2F83A05700E8F47E = {
 			isa = PBXGroup;
 			children = (
+				9D53FF122FABD6050035EA8F /* Shared */,
 				9D60C0492F83A05700E8F47E /* ClipKeep */,
 				9D0640A62FAA97BA00F07094 /* ClipKeepKeyboard */,
 				9D60C0482F83A05700E8F47E /* Products */,
@@ -210,6 +226,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D53FF152FABD6050035EA8F /* SharedClipStore.swift in Sources */,
+				9D53FF162FABD6050035EA8F /* SharedClipItem.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -217,6 +235,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D53FF132FABD6050035EA8F /* SharedClipStore.swift in Sources */,
+				9D53FF142FABD6050035EA8F /* SharedClipItem.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

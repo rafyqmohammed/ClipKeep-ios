@@ -91,6 +91,9 @@ class ClipboardStore {
         try? context.save()
         cleanupIfNeeded(context: context)
         showCaptureToast(for: type)
+
+        let updated = (try? context.fetch(descriptor)) ?? []
+        SharedClipStore.sync(from: updated)
     }
 
     private func showCaptureToast(for type: ClipType) {
@@ -134,6 +137,10 @@ class ClipboardStore {
             }
         }
 
-        if changed { try? context.save() }
+        if changed {
+            try? context.save()
+            let remaining = (try? context.fetch(descriptor)) ?? []
+            SharedClipStore.sync(from: remaining)
+        }
     }
 }
