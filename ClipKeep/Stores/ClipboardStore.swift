@@ -93,7 +93,26 @@ class ClipboardStore {
         showCaptureToast(for: type)
 
         let updated = (try? context.fetch(descriptor)) ?? []
-        SharedClipStore.sync(from: updated)
+        syncToSharedStore(updated)
+    }
+
+    private func syncToSharedStore(_ items: [ClipItem]) {
+        let shared = items
+            .filter { $0.type != .image }
+            .sorted {
+                if $0.isPinned != $1.isPinned { return $0.isPinned }
+                return $0.createdAt > $1.createdAt
+            }
+            .map {
+                SharedClipItem(
+                    id: $0.id,
+                    text: $0.textValue,
+                    type: $0.type.rawValue,
+                    createdAt: $0.createdAt,
+                    isPinned: $0.isPinned
+                )
+            }
+        SharedClipStore.sync(from: shared)
     }
 
     private func showCaptureToast(for type: ClipType) {
@@ -140,7 +159,7 @@ class ClipboardStore {
         if changed {
             try? context.save()
             let remaining = (try? context.fetch(descriptor)) ?? []
-            SharedClipStore.sync(from: remaining)
+            syncToSharedStore(remaining)
         }
     }
 }

@@ -23,25 +23,9 @@ enum SharedClipStore {
     }()
 
     // Appelé depuis ClipKeep (app principale) après chaque modification
-    static func sync(from items: [ClipItem]) {
-        let shared = items
-            .filter { $0.type != .image }
-            .sorted {
-                if $0.isPinned != $1.isPinned { return $0.isPinned }
-                return $0.createdAt > $1.createdAt
-            }
-            .map {
-                SharedClipItem(
-                    id: $0.id,
-                    text: $0.textValue,
-                    type: $0.type.rawValue,
-                    createdAt: $0.createdAt,
-                    isPinned: $0.isPinned
-                )
-            }
-
+    static func sync(from items: [SharedClipItem]) {
         guard let url = fileURL,
-              let data = try? encoder.encode(shared) else { return }
+              let data = try? encoder.encode(items) else { return }
         try? data.write(to: url, options: .atomic)
     }
 
