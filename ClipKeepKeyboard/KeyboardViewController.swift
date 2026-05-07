@@ -1,33 +1,42 @@
 import UIKit
+import SwiftUI
 
 class KeyboardViewController: UIInputViewController {
 
-    private let nextKeyboardButton = UIButton(type: .system)
+    private var hostingController: UIHostingController<KeyboardView>?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        nextKeyboardButton.setTitle("🌐", for: .normal)
-        nextKeyboardButton.sizeToFit()
-        nextKeyboardButton.translatesAutoresizingMaskIntoConstraints = false
-        nextKeyboardButton.addTarget(
-            self,
-            action: #selector(handleInputModeList(from:with:)),
-            for: .allTouchEvents
-        )
-
-        view.addSubview(nextKeyboardButton)
-
-        NSLayoutConstraint.activate([
-            nextKeyboardButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
-            nextKeyboardButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -8)
-        ])
-
-        view.backgroundColor = .systemGroupedBackground
+        setupKeyboardView()
     }
 
-    override func viewWillLayoutSubviews() {
-        nextKeyboardButton.isHidden = !needsInputModeSwitchKey
-        super.viewWillLayoutSubviews()
+    private func setupKeyboardView() {
+        let keyboardView = KeyboardView(
+            needsNextKeyboard: needsInputModeSwitchKey,
+            onInsert: { [weak self] text in
+                self?.textDocumentProxy.insertText(text)
+            },
+            onDelete: { [weak self] in
+                self?.textDocumentProxy.deleteBackward()
+            },
+            onNextKeyboard: { [weak self] in
+                self?.advanceToNextInputMode()
+            }
+        )
+
+        let hosting = UIHostingController(rootView: keyboardView)
+        hostingController = hosting
+
+        addChild(hosting)
+        view.addSubview(hosting.view)
+        hosting.didMove(toParent: self)
+
+        hosting.view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            hosting.view.topAnchor.constraint(equalTo: view.topAnchor),
+            hosting.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            hosting.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            hosting.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
     }
 }
