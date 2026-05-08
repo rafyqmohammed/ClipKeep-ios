@@ -46,6 +46,9 @@ struct ClipKeepApp: App {
             ContentView()
                 .modelContainer(modelContainer)
                 .environment(clipboardStore)
+                .task {
+                    clipboardStore.initialSync(context: modelContainer.mainContext)
+                }
                 .onReceive(Timer.publish(every: 1.5, on: .main, in: .common).autoconnect()) { _ in
                     Task {
                         clipboardStore.checkClipboard(context: modelContainer.mainContext)

@@ -30,6 +30,12 @@ class ClipboardStore {
         set { UserDefaults.standard.set(newValue, forKey: pastePromptKey) }
     }
 
+    func initialSync(context: ModelContext) {
+        let descriptor = FetchDescriptor<ClipItem>(sortBy: [SortDescriptor(\ClipItem.createdAt, order: .reverse)])
+        let all = (try? context.fetch(descriptor)) ?? []
+        syncToSharedStore(all)
+    }
+
     func checkClipboard(context: ModelContext) {
         guard isEnabled else { return }
         guard UIPasteboard.general.changeCount != lastChangeCount else { return }
@@ -108,6 +114,7 @@ class ClipboardStore {
                     id: $0.id,
                     text: $0.textValue,
                     type: $0.type.rawValue,
+                    subtype: $0.detectedSubtype?.rawValue,
                     createdAt: $0.createdAt,
                     isPinned: $0.isPinned
                 )
