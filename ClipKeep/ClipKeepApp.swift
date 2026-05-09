@@ -13,6 +13,7 @@ import Combine
 struct ClipKeepApp: App {
     let modelContainer: ModelContainer
     @State private var clipboardStore = ClipboardStore()
+    @Environment(\.scenePhase) private var scenePhase
 
     init() {
         do {
@@ -54,6 +55,11 @@ struct ClipKeepApp: App {
                         clipboardStore.checkClipboard(context: modelContainer.mainContext)
                     }
                 }
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                clipboardStore.initialSync(context: modelContainer.mainContext)
+            }
         }
     }
 }
