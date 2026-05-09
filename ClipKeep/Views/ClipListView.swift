@@ -136,7 +136,11 @@ struct ClipListView: View {
             shareMenuButton(for: clip)
             Divider()
             Button {
-                withAnimation { clip.isPinned.toggle(); try? modelContext.save() }
+                withAnimation {
+                    clip.isPinned.toggle()
+                    try? modelContext.save()
+                    clipboardStore.syncAll(context: modelContext)
+                }
             } label: {
                 Label(
                     clip.isPinned ? "Désépingler" : "Épingler",
@@ -152,7 +156,11 @@ struct ClipListView: View {
         }
         .swipeActions(edge: .leading, allowsFullSwipe: true) {
             Button {
-                withAnimation { clip.isPinned.toggle(); try? modelContext.save() }
+                withAnimation {
+                    clip.isPinned.toggle()
+                    try? modelContext.save()
+                    clipboardStore.syncAll(context: modelContext)
+                }
             } label: {
                 Label(clip.isPinned ? "Désépingler" : "Épingler",
                       systemImage: clip.isPinned ? "pin.slash" : "pin")

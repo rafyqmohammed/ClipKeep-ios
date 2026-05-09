@@ -31,12 +31,29 @@ class ClipboardStore {
     }
 
     func initialSync(context: ModelContext) {
+        applyPendingPinChanges(context: context)
         let descriptor = FetchDescriptor<ClipItem>(sortBy: [SortDescriptor(\ClipItem.createdAt, order: .reverse)])
         let all = (try? context.fetch(descriptor)) ?? []
         syncToSharedStore(all)
     }
 
+    private func applyPendingPinChanges(context: ModelContext) {
+        let pendingIDs = SharedClipStore.consumePendingPinToggles()
+        guard !pendingIDs.isEmpty else { return }
+        let descriptor = FetchDescriptor<ClipItem>()
+        guard let all = try? context.fetch(descriptor) else { return }
+        var changed = false
+        for id in pendingIDs {
+            if let item = all.first(where: { $0.id == id }) {
+                item.isPinned.toggle()
+                changed = true
+            }
+        }
+        if changed { try? context.save() }
+    }
+
     func checkClipboard(context: ModelContext) {
+        applyPendingPinChanges(context: context)
         guard isEnabled else { return }
         guard UIPasteboard.general.changeCount != lastChangeCount else { return }
         lastChangeCount = UIPasteboard.general.changeCount
@@ -133,6 +150,12 @@ class ClipboardStore {
             try? await Task.sleep(for: .seconds(2.5))
             self?.captureToast = nil
         }
+    }
+
+    func syncAll(context: ModelContext) {
+        let descriptor = FetchDescriptor<ClipItem>(sortBy: [SortDescriptor(\ClipItem.createdAt, order: .reverse)])
+        let all = (try? context.fetch(descriptor)) ?? []
+        syncToSharedStore(all)
     }
 
     func cleanupIfNeeded(context: ModelContext) {

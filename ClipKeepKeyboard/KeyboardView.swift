@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 private enum ClipTypeFilter: String, CaseIterable {
     case all  = "Tout"
@@ -13,9 +14,10 @@ struct KeyboardView: View {
     let onDelete: () -> Void
     let onNextKeyboard: () -> Void
 
-    @State private var searchText   = ""
-    @State private var activeFilter = ClipTypeFilter.all
+    @State private var searchText    = ""
+    @State private var activeFilter  = ClipTypeFilter.all
     @State private var clips: [SharedClipItem] = []
+    @State private var pinOverrides: [UUID: Bool] = [:]
 
     private var filtered: [SharedClipItem] {
         clips.filter { clip in
@@ -43,6 +45,20 @@ struct KeyboardView: View {
         .frame(height: 260)
         .background(Color(.systemGroupedBackground))
         .onAppear { clips = SharedClipStore.load() }
+        .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
+            let fresh = SharedClipStore.load()
+            // Applique pinOverrides par-dessus les données fichier
+            // (le clavier ne peut pas écrire le fichier, on préserve l'état local)
+            clips = fresh.map { clip in
+                if let override = pinOverrides[clip.id] {
+                    if clip.isPinned == override { pinOverrides.removeValue(forKey: clip.id) }
+                    return SharedClipItem(id: clip.id, text: clip.text, type: clip.type,
+                                         subtype: clip.subtype, createdAt: clip.createdAt,
+                                         isPinned: override)
+                }
+                return clip
+            }
+        }
     }
 
     // MARK: — Search bar
@@ -104,16 +120,25 @@ struct KeyboardView: View {
                     .font(.subheadline)
                 Spacer()
             } else {
-                ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(filtered) { clip in
-                            ClipKeyboardRow(clip: clip)
-                                .onTapGesture { onInsert(clip.text) }
-                            Divider()
-                                .padding(.leading, 44)
+                ClipsListView(
+                    clips: filtered,
+                    onInsert: { text in onInsert(text) },
+                    onPin: { id in
+                        let current = clips.first { $0.id == id }?.isPinned ?? false
+                        let newState = !current
+                        // Garde l'état local (le timer ne peut pas le reverter)
+                        pinOverrides[id] = newState
+                        // Mise à jour en mémoire
+                        clips = clips.map { c in
+                            guard c.id == id else { return c }
+                            return SharedClipItem(id: c.id, text: c.text, type: c.type,
+                                                  subtype: c.subtype, createdAt: c.createdAt,
+                                                  isPinned: newState)
                         }
+                        // Enregistre pour que ClipKeep l'applique à l'ouverture
+                        SharedClipStore.recordPending(id: id)
                     }
-                }
+                )
             }
         }
     }
