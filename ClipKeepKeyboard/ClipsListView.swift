@@ -1,6 +1,12 @@
 import UIKit
 import SwiftUI
 
+// Liste des clips affichée dans l'extension clavier.
+// Implémentée en UIKit (UITableView) et non en SwiftUI, car dans une extension clavier
+// iOS intercepte les gestes SwiftUI pour les donner au champ de texte en arrière-plan.
+// Résultat : les boutons SwiftUI ne reçoivent jamais les taps.
+// Un UIButton avec touchUpInside en UIKit reçoit les taps directement au niveau système.
+
 // MARK: - UIViewRepresentable
 
 struct ClipsListView: UIViewRepresentable {
@@ -159,7 +165,7 @@ final class ClipCell: UITableViewCell {
     }
 
     @objc private func pinTapped() {
-        // Feedback immédiat dans la cellule
+        // Feedback visuel immédiat dans la cellule avant que la liste se recharge.
         let willPin = pinBtn.tintColor != .orange
         pinBtn.tintColor          = willPin ? .orange : .systemGray3
         pinBtn.setImage(UIImage(systemName: willPin ? "pin.fill" : "pin"), for: .normal)

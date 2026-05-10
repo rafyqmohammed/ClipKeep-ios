@@ -14,30 +14,26 @@ struct KeyboardView: View {
     let onDelete: () -> Void
     let onNextKeyboard: () -> Void
 
-    @State private var searchText    = ""
     @State private var activeFilter  = ClipTypeFilter.all
     @State private var clips: [SharedClipItem] = []
+    // Mémorise les épingles posées localement dans le clavier.
+    // Nécessaire car le timer relit clips.json chaque seconde : sans ce dictionnaire,
+    // il écraserait l'état local avant que ClipKeep ait écrit la confirmation.
     @State private var pinOverrides: [UUID: Bool] = [:]
 
     private var filtered: [SharedClipItem] {
         clips.filter { clip in
-            let matchesType: Bool = {
-                switch activeFilter {
-                case .all:  return true
-                case .text: return clip.type == "text"
-                case .url:  return clip.type == "url"
-                case .code: return clip.type == "code"
-                }
-            }()
-            let matchesSearch = searchText.isEmpty ||
-                clip.text.localizedCaseInsensitiveContains(searchText)
-            return matchesType && matchesSearch
+            switch activeFilter {
+            case .all:  return true
+            case .text: return clip.type == "text"
+            case .url:  return clip.type == "url"
+            case .code: return clip.type == "code"
+            }
         }
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            searchBar
             typeFilter
             clipsList
             bottomBar
@@ -45,12 +41,13 @@ struct KeyboardView: View {
         .frame(height: 260)
         .background(Color(.systemGroupedBackground))
         .onAppear { clips = SharedClipStore.load() }
+        // Relit clips.json chaque seconde pour recevoir les changements de ClipKeep.
+        // Fusionne avec pinOverrides : si ClipKeep a confirmé l'état, l'override est effacé.
         .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
             let fresh = SharedClipStore.load()
-            // Applique pinOverrides par-dessus les données fichier
-            // (le clavier ne peut pas écrire le fichier, on préserve l'état local)
             clips = fresh.map { clip in
                 if let override = pinOverrides[clip.id] {
+                    // ClipKeep a confirmé l'état → override devenu inutile, on le retire.
                     if clip.isPinned == override { pinOverrides.removeValue(forKey: clip.id) }
                     return SharedClipItem(id: clip.id, text: clip.text, type: clip.type,
                                          subtype: clip.subtype, createdAt: clip.createdAt,
@@ -59,32 +56,6 @@ struct KeyboardView: View {
                 return clip
             }
         }
-    }
-
-    // MARK: — Search bar
-
-    private var searchBar: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "magnifyingglass")
-                .foregroundStyle(.secondary)
-                .font(.subheadline)
-            TextField("Rechercher...", text: $searchText)
-                .autocorrectionDisabled()
-                .font(.subheadline)
-            if !searchText.isEmpty {
-                Button { searchText = "" } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.secondary)
-                }
-            }
-        }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 7)
-        .background(Color(.systemGray5))
-        .clipShape(RoundedRectangle(cornerRadius: 9))
-        .padding(.horizontal, 10)
-        .padding(.top, 8)
-        .padding(.bottom, 4)
     }
 
     // MARK: — Type filter pills
@@ -113,9 +84,7 @@ struct KeyboardView: View {
         Group {
             if filtered.isEmpty {
                 Spacer()
-                Text(searchText.isEmpty && activeFilter == .all
-                     ? "Aucun clip enregistré"
-                     : "Aucun résultat")
+                Text(activeFilter == .all ? "Aucun clip enregistré" : "Aucun résultat")
                     .foregroundStyle(.secondary)
                     .font(.subheadline)
                 Spacer()
@@ -126,16 +95,17 @@ struct KeyboardView: View {
                     onPin: { id in
                         let current = clips.first { $0.id == id }?.isPinned ?? false
                         let newState = !current
-                        // Garde l'état local (le timer ne peut pas le reverter)
+                        // 1. Sauvegarde l'état local pour que le timer ne l'écrase pas.
                         pinOverrides[id] = newState
-                        // Mise à jour en mémoire
+                        // 2. Met à jour l'affichage immédiatement (sans attendre le timer).
                         clips = clips.map { c in
                             guard c.id == id else { return c }
                             return SharedClipItem(id: c.id, text: c.text, type: c.type,
                                                   subtype: c.subtype, createdAt: c.createdAt,
                                                   isPinned: newState)
                         }
-                        // Enregistre pour que ClipKeep l'applique à l'ouverture
+                        // 3. Écrit l'UUID dans pending_pins.json pour que ClipKeep
+                        //    applique le changement dans SwiftData à la prochaine ouverture.
                         SharedClipStore.recordPending(id: id)
                     }
                 )
