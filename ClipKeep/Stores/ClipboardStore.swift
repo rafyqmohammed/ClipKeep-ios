@@ -30,6 +30,8 @@ class ClipboardStore {
         set { UserDefaults.standard.set(newValue, forKey: pastePromptKey) }
     }
 
+    // Appelé au lancement de l'app et à chaque retour au premier plan.
+    // Traite d'abord les épingles en attente du clavier, puis met à jour clips.json.
     func initialSync(context: ModelContext) {
         applyPendingPinChanges(context: context)
         let descriptor = FetchDescriptor<ClipItem>(sortBy: [SortDescriptor(\ClipItem.createdAt, order: .reverse)])
@@ -37,6 +39,9 @@ class ClipboardStore {
         syncToSharedStore(all)
     }
 
+    // Lit pending_pins.json, trouve les ClipItems correspondants dans SwiftData,
+    // bascule leur isPinned, puis sauvegarde. Appelé à chaque tick du timer
+    // et à chaque activation de la scène pour ne rater aucune épingle du clavier.
     private func applyPendingPinChanges(context: ModelContext) {
         let pendingIDs = SharedClipStore.consumePendingPinToggles()
         guard !pendingIDs.isEmpty else { return }
@@ -52,6 +57,8 @@ class ClipboardStore {
         if changed { try? context.save() }
     }
 
+    // Vérifie le presse-papiers toutes les 1,5 secondes.
+    // Traite aussi les épingles en attente du clavier à chaque tick.
     func checkClipboard(context: ModelContext) {
         applyPendingPinChanges(context: context)
         guard isEnabled else { return }
@@ -152,6 +159,9 @@ class ClipboardStore {
         }
     }
 
+    // Force une sync immédiate de SwiftData vers clips.json.
+    // Appelé depuis ClipListView après chaque épingle/désépingle dans ClipKeep,
+    // pour que le clavier voit le changement dès sa prochaine tick d'une seconde.
     func syncAll(context: ModelContext) {
         let descriptor = FetchDescriptor<ClipItem>(sortBy: [SortDescriptor(\ClipItem.createdAt, order: .reverse)])
         let all = (try? context.fetch(descriptor)) ?? []

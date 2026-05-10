@@ -47,15 +47,19 @@ struct ClipKeepApp: App {
             ContentView()
                 .modelContainer(modelContainer)
                 .environment(clipboardStore)
+                // Sync initiale au premier lancement (clips + épingles en attente du clavier).
                 .task {
                     clipboardStore.initialSync(context: modelContainer.mainContext)
                 }
+                // Vérifie le presse-papiers et les épingles du clavier toutes les 1,5 secondes.
                 .onReceive(Timer.publish(every: 1.5, on: .main, in: .common).autoconnect()) { _ in
                     Task {
                         clipboardStore.checkClipboard(context: modelContainer.mainContext)
                     }
                 }
         }
+        // Chaque fois que l'utilisateur revient dans ClipKeep (depuis le clavier ou une autre app),
+        // on applique immédiatement les épingles en attente avant d'afficher l'écran.
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 clipboardStore.initialSync(context: modelContainer.mainContext)
