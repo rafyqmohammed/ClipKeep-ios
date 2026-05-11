@@ -31,12 +31,54 @@ class ClipboardStore {
     }
 
     // Appelé au lancement de l'app et à chaque retour au premier plan.
-    // Traite d'abord les épingles en attente du clavier, puis met à jour clips.json.
+    // Ordre : épingles en attente → clips capturés → sync du fichier partagé.
     func initialSync(context: ModelContext) {
         applyPendingPinChanges(context: context)
+        processCapturedClips(context: context)
         let descriptor = FetchDescriptor<ClipItem>(sortBy: [SortDescriptor(\ClipItem.createdAt, order: .reverse)])
         let all = (try? context.fetch(descriptor)) ?? []
         syncToSharedStore(all)
+    }
+
+    // Traite les clips capturés par le clavier ET la Share Extension.
+    // Texte/URL/Code → captured_clips.json | Images → captured_images/
+    // Pas de toast : les clips apparaissent silencieusement dans la liste.
+    func processCapturedClips(context: ModelContext) {
+        let capturedTexts  = SharedClipStore.consumeCaptured()
+        let capturedImages = SharedClipStore.consumeCapturedImages()
+        guard !capturedTexts.isEmpty || !capturedImages.isEmpty else { return }
+
+        let descriptor = FetchDescriptor<ClipItem>()
+        let all = (try? context.fetch(descriptor)) ?? []
+        var changed = false
+
+        // Texte, URLs et code capturés par le clavier ou la Share Extension.
+        for item in capturedTexts {
+            guard let data = item.text.data(using: .utf8) else { continue }
+            if let existing = all.first(where: { $0.contentData == data }) {
+                context.delete(existing)
+            }
+            let type: ClipType
+            if item.text.hasPrefix("http") { type = .url }
+            else if looksLikeCode(item.text) { type = .code }
+            else { type = .text }
+            context.insert(ClipItem(contentData: data, type: type))
+            changed = true
+        }
+
+        // Images capturées depuis la Share Extension.
+        for imageData in capturedImages {
+            if let existing = all.first(where: { $0.contentData == imageData }) {
+                context.delete(existing)
+            }
+            context.insert(ClipItem(contentData: imageData, type: .image))
+            changed = true
+        }
+
+        if changed {
+            try? context.save()
+            cleanupIfNeeded(context: context)
+        }
     }
 
     // Lit pending_pins.json, trouve les ClipItems correspondants dans SwiftData,

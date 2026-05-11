@@ -5,9 +5,42 @@ class KeyboardViewController: UIInputViewController {
 
     private var hostingController: UIHostingController<KeyboardView>?
 
+    // Surveillance du presse-papiers pendant que le clavier est actif.
+    // Le clavier étant actif pendant toute session de frappe, il peut capturer
+    // les copies faites dans n'importe quelle app sans que ClipKeep soit ouvert.
+    private var lastChangeCount = UIPasteboard.general.changeCount
+    private var captureTimer: Timer?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupKeyboardView()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // Initialise le compteur à l'apparition pour ne pas capturer
+        // du contenu déjà copié avant l'ouverture du clavier.
+        lastChangeCount = UIPasteboard.general.changeCount
+        captureTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { [weak self] _ in
+            self?.captureIfChanged()
+        }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        captureTimer?.invalidate()
+        captureTimer = nil
+    }
+
+    // Vérifie si le presse-papiers a changé depuis la dernière vérification.
+    // Si oui, écrit le nouveau contenu dans captured_clips.json (App Group).
+    private func captureIfChanged() {
+        let current = UIPasteboard.general.changeCount
+        guard current != lastChangeCount else { return }
+        lastChangeCount = current
+        if let text = UIPasteboard.general.string, !text.isEmpty {
+            SharedClipStore.addCaptured(text: text)
+        }
     }
 
     private func setupKeyboardView() {

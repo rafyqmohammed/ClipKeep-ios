@@ -12,6 +12,10 @@
 		9D53FF142FABD6050035EA8F /* SharedClipItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D53FF102FABD6050035EA8F /* SharedClipItem.swift */; };
 		9D53FF152FABD6050035EA8F /* SharedClipStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D53FF112FABD6050035EA8F /* SharedClipStore.swift */; };
 		9D53FF162FABD6050035EA8F /* SharedClipItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D53FF102FABD6050035EA8F /* SharedClipItem.swift */; };
+		9DBCD90F2FB26EDC00B71544 /* ClipKeepShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9DBCD9052FB26EDC00B71544 /* ClipKeepShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		9DBCD9192FB2765E00B71544 /* SharedClipStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D53FF112FABD6050035EA8F /* SharedClipStore.swift */; };
+		9DBCD91A2FB2766900B71544 /* SharedClipItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D53FF102FABD6050035EA8F /* SharedClipItem.swift */; };
+		9DBCD91B2FB26EDC00B71544 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DBCD91C2FB26EDC00B71544 /* ShareViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -21,6 +25,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 9D0640A42FAA97BA00F07094;
 			remoteInfo = ClipKeepKeyboard;
+		};
+		9DBCD90D2FB26EDC00B71544 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9D60C03F2F83A05700E8F47E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9DBCD9042FB26EDC00B71544;
+			remoteInfo = ClipKeepShareExtension;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -32,6 +43,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				9D0640AC2FAA97BA00F07094 /* ClipKeepKeyboard.appex in Embed Foundation Extensions */,
+				9DBCD90F2FB26EDC00B71544 /* ClipKeepShareExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -42,7 +54,9 @@
 		9D0640A52FAA97BA00F07094 /* ClipKeepKeyboard.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ClipKeepKeyboard.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D53FF102FABD6050035EA8F /* SharedClipItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedClipItem.swift; sourceTree = "<group>"; };
 		9D53FF112FABD6050035EA8F /* SharedClipStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedClipStore.swift; sourceTree = "<group>"; };
+		9DBCD91C2FB26EDC00B71544 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		9D60C0472F83A05700E8F47E /* ClipKeep.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClipKeep.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9DBCD9052FB26EDC00B71544 /* ClipKeepShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ClipKeepShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -52,6 +66,13 @@
 				Info.plist,
 			);
 			target = 9D0640A42FAA97BA00F07094 /* ClipKeepKeyboard */;
+		};
+		9DBCD9202FB26EDC00B71544 /* Exceptions for "ClipKeepShareExtension" folder in "ClipKeepShareExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 9DBCD9042FB26EDC00B71544 /* ClipKeepShareExtension */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -67,6 +88,14 @@
 		9D60C0492F83A05700E8F47E /* ClipKeep */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = ClipKeep;
+			sourceTree = "<group>";
+		};
+		9DBCD9062FB26EDC00B71544 /* ClipKeepShareExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				9DBCD9202FB26EDC00B71544 /* Exceptions for "ClipKeepShareExtension" folder in "ClipKeepShareExtension" target */,
+			);
+			path = ClipKeepShareExtension;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -86,6 +115,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9DBCD9022FB26EDC00B71544 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -94,6 +130,7 @@
 			children = (
 				9D53FF102FABD6050035EA8F /* SharedClipItem.swift */,
 				9D53FF112FABD6050035EA8F /* SharedClipStore.swift */,
+				9DBCD91C2FB26EDC00B71544 /* ShareViewController.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -104,6 +141,7 @@
 				9D53FF122FABD6050035EA8F /* Shared */,
 				9D60C0492F83A05700E8F47E /* ClipKeep */,
 				9D0640A62FAA97BA00F07094 /* ClipKeepKeyboard */,
+				9DBCD9062FB26EDC00B71544 /* ClipKeepShareExtension */,
 				9D60C0482F83A05700E8F47E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -113,6 +151,7 @@
 			children = (
 				9D60C0472F83A05700E8F47E /* ClipKeep.app */,
 				9D0640A52FAA97BA00F07094 /* ClipKeepKeyboard.appex */,
+				9DBCD9052FB26EDC00B71544 /* ClipKeepShareExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -155,6 +194,7 @@
 			);
 			dependencies = (
 				9D0640AB2FAA97BA00F07094 /* PBXTargetDependency */,
+				9DBCD90E2FB26EDC00B71544 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				9D60C0492F83A05700E8F47E /* ClipKeep */,
@@ -165,6 +205,28 @@
 			productName = ClipKeep;
 			productReference = 9D60C0472F83A05700E8F47E /* ClipKeep.app */;
 			productType = "com.apple.product-type.application";
+		};
+		9DBCD9042FB26EDC00B71544 /* ClipKeepShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9DBCD9132FB26EDC00B71544 /* Build configuration list for PBXNativeTarget "ClipKeepShareExtension" */;
+			buildPhases = (
+				9DBCD9012FB26EDC00B71544 /* Sources */,
+				9DBCD9022FB26EDC00B71544 /* Frameworks */,
+				9DBCD9032FB26EDC00B71544 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				9DBCD9062FB26EDC00B71544 /* ClipKeepShareExtension */,
+			);
+			name = ClipKeepShareExtension;
+			packageProductDependencies = (
+			);
+			productName = ClipKeepShareExtension;
+			productReference = 9DBCD9052FB26EDC00B71544 /* ClipKeepShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -180,6 +242,9 @@
 						CreatedOnToolsVersion = 26.2;
 					};
 					9D60C0462F83A05700E8F47E = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					9DBCD9042FB26EDC00B71544 = {
 						CreatedOnToolsVersion = 26.2;
 					};
 				};
@@ -200,6 +265,7 @@
 			targets = (
 				9D60C0462F83A05700E8F47E /* ClipKeep */,
 				9D0640A42FAA97BA00F07094 /* ClipKeepKeyboard */,
+				9DBCD9042FB26EDC00B71544 /* ClipKeepShareExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -213,6 +279,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		9D60C0452F83A05700E8F47E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9DBCD9032FB26EDC00B71544 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -240,6 +313,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9DBCD9012FB26EDC00B71544 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9DBCD91A2FB2766900B71544 /* SharedClipItem.swift in Sources */,
+				9DBCD9192FB2765E00B71544 /* SharedClipStore.swift in Sources */,
+				9DBCD91B2FB26EDC00B71544 /* ShareViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -247,6 +330,11 @@
 			isa = PBXTargetDependency;
 			target = 9D0640A42FAA97BA00F07094 /* ClipKeepKeyboard */;
 			targetProxy = 9D0640AA2FAA97BA00F07094 /* PBXContainerItemProxy */;
+		};
+		9DBCD90E2FB26EDC00B71544 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9DBCD9042FB26EDC00B71544 /* ClipKeepShareExtension */;
+			targetProxy = 9DBCD90D2FB26EDC00B71544 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -500,6 +588,66 @@
 			};
 			name = Release;
 		};
+		9DBCD9102FB26EDC00B71544 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ClipKeepShareExtension/ClipKeepShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q7V3R23Z3V;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ClipKeepShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ClipKeepShareExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rafyq.ClipKeep.ClipKeepShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9DBCD9112FB26EDC00B71544 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ClipKeepShareExtension/ClipKeepShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q7V3R23Z3V;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ClipKeepShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ClipKeepShareExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rafyq.ClipKeep.ClipKeepShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -526,6 +674,15 @@
 			buildConfigurations = (
 				9D60C0532F83A05900E8F47E /* Debug */,
 				9D60C0542F83A05900E8F47E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9DBCD9132FB26EDC00B71544 /* Build configuration list for PBXNativeTarget "ClipKeepShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9DBCD9102FB26EDC00B71544 /* Debug */,
+				9DBCD9112FB26EDC00B71544 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
