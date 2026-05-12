@@ -1,6 +1,7 @@
 import UIKit
 import SwiftUI
 
+@objc(KeyboardViewController)
 class KeyboardViewController: UIInputViewController {
 
     private var hostingController: UIHostingController<KeyboardView>?
