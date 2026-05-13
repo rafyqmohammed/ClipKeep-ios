@@ -18,7 +18,7 @@ struct ClipDetailView: View {
 
             // Content section
             VStack(alignment: .leading, spacing: 12) {
-                Text("Contenu")
+                Text(loc("detail.section.content"))
                     .font(.headline)
                     .padding(.horizontal)
 
@@ -55,14 +55,14 @@ struct ClipDetailView: View {
             // Info section
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text("Type:")
+                    Text(loc("detail.type.label"))
                         .foregroundColor(.secondary)
                     Spacer()
                     if clip.type == .code {
                         HStack(spacing: 4) {
                             Image(systemName: "chevron.left.forwardslash.chevron.right")
                                 .font(.caption)
-                            Text("Code")
+                            Text(loc("type.code"))
                         }
                         .fontWeight(.semibold)
                         .foregroundColor(.purple)
@@ -79,7 +79,7 @@ struct ClipDetailView: View {
                     }
                 }
                 HStack {
-                    Text("Crée le:")
+                    Text(loc("detail.date.label"))
                         .foregroundColor(.secondary)
                     Spacer()
                     Text(clip.createdAt.formatted(date: .abbreviated, time: .standard))
@@ -87,7 +87,7 @@ struct ClipDetailView: View {
                 }
                 if clip.type == .code {
                     HStack {
-                        Text("Lignes:")
+                        Text(loc("detail.lines.label"))
                             .foregroundColor(.secondary)
                         Spacer()
                         Text("\(clip.textValue.components(separatedBy: "\n").count)")
@@ -96,10 +96,10 @@ struct ClipDetailView: View {
                 }
                 if clip.type != .image {
                     HStack {
-                        Text("Taille:")
+                        Text(loc("detail.size.label"))
                             .foregroundColor(.secondary)
                         Spacer()
-                        Text("\(clip.contentData.count) bytes")
+                        Text("\(clip.contentData.count) \(loc("detail.size.unit"))")
                             .fontWeight(.semibold)
                     }
                 }
@@ -114,7 +114,7 @@ struct ClipDetailView: View {
                 Button(action: copyToClipboard) {
                     HStack {
                         Image(systemName: copied ? "checkmark" : "doc.on.doc")
-                        Text(copied ? "Copié !" : "Copier")
+                        Text(copied ? loc("action.copied") : loc("action.copy"))
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -129,7 +129,7 @@ struct ClipDetailView: View {
             .padding(.horizontal)
             .padding(.bottom)
         }
-        .navigationTitle("Détails")
+        .navigationTitle(loc("title.details"))
         .navigationBarTitleDisplayMode(.inline)
     }
 
@@ -152,7 +152,7 @@ struct ClipDetailView: View {
         } else if clip.type == .image, let uiImage = UIImage(data: clip.contentData) {
             ShareLink(
                 item: Image(uiImage: uiImage),
-                preview: SharePreview("Image", image: Image(uiImage: uiImage))
+                preview: SharePreview(loc("type.image"), image: Image(uiImage: uiImage))
             ) { shareLabel }
         } else {
             ShareLink(item: clip.textValue) { shareLabel }
@@ -162,7 +162,7 @@ struct ClipDetailView: View {
     private var shareLabel: some View {
         HStack {
             Image(systemName: "square.and.arrow.up")
-            Text("Partager")
+            Text(loc("action.share"))
         }
         .frame(maxWidth: .infinity)
         .padding()

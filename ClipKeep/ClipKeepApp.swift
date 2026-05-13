@@ -44,16 +44,19 @@ struct ClipKeepApp: App {
         }
     }
 
+    @StateObject private var langManager = LanguageManager.shared
+
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .modelContainer(modelContainer)
                 .environment(clipboardStore)
-                // Sync initiale au premier lancement (clips + épingles + captures en attente).
+                .environmentObject(langManager)
+                .environment(\.layoutDirection, langManager.isRTL ? .rightToLeft : .leftToRight)
+                .id(langManager.current)
                 .task {
                     clipboardStore.initialSync(context: modelContainer.mainContext)
                 }
-                // Vérifie le presse-papiers et les épingles du clavier toutes les 1,5 secondes.
                 .onReceive(Timer.publish(every: 1.5, on: .main, in: .common).autoconnect()) { _ in
                     Task {
                         clipboardStore.checkClipboard(context: modelContainer.mainContext)

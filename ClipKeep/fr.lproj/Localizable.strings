@@ -1,0 +1,111 @@
+/* Navigation */
+"title.app" = "ClipKeep";
+"title.settings" = "Paramètres";
+"title.details" = "Détails";
+
+/* Actions */
+"action.copy" = "Copier";
+"action.copied" = "Copié !";
+"action.share" = "Partager";
+"action.pin" = "Épingler";
+"action.unpin" = "Désépingler";
+"action.delete" = "Supprimer";
+"action.cancel" = "Annuler";
+"action.close" = "Fermer";
+"action.next" = "Suivant";
+"action.start" = "Commencer";
+"action.allow" = "Autoriser";
+"action.later" = "Plus tard";
+"action.open" = "Ouvrir";
+"action.confirm.delete" = "Effacer";
+"action.export.pdf" = "Exporter en PDF";
+"action.clear.history" = "Effacer tout l'historique";
+
+/* Filters */
+"filter.all" = "Tout";
+"filter.text" = "Texte";
+"filter.code" = "Code";
+"filter.image" = "Images";
+"filter.link" = "Liens";
+
+/* Types */
+"type.text" = "Texte";
+"type.code" = "Code";
+"type.link" = "Lien";
+"type.image" = "Image";
+"type.email" = "Email";
+"type.phone" = "Téléphone";
+"type.date" = "Date";
+"type.color" = "Couleur";
+"type.address" = "Adresse";
+
+/* Status */
+"status.active" = "Actif";
+"status.inactive" = "Inactif";
+
+/* Empty states */
+"empty.no.items" = "Aucun élément sauvegardé";
+"empty.no.items.subtitle" = "Copiez du texte, une image ou un lien pour les voir ici";
+"empty.no.results" = "Aucun résultat";
+"empty.no.results.subtitle" = "Essayez un autre terme ou filtre";
+"search.placeholder" = "Rechercher dans l'historique…";
+
+/* Alerts */
+"alert.permission.title" = "Activer la capture automatique";
+"alert.permission.message" = "Pour éviter les demandes répétées et activer la capture auto: Réglages > ClipKeep > Coller à partir d'autres apps > Autoriser";
+"alert.delete.title" = "Confirmer la suppression";
+"alert.delete.message" = "Cette action supprimera tous les éléments sauvegardés. Cette opération ne peut pas être annulée.";
+
+/* Settings */
+"settings.section.capture" = "Capture";
+"settings.capture.enabled" = "Capture activée";
+"settings.capture.disabled" = "Capture désactivée";
+"settings.section.info" = "Informations";
+"settings.info.saved" = "Éléments sauvegardés";
+"settings.info.pinned" = "Éléments épinglés";
+"settings.section.storage" = "Stockage";
+"settings.storage.retention" = "Durée de conservation";
+"settings.storage.limit" = "Limite d'éléments";
+"settings.storage.unlimited" = "Illimité";
+"settings.storage.7days" = "7 jours";
+"settings.storage.30days" = "30 jours";
+"settings.storage.50items" = "50 éléments";
+"settings.storage.100items" = "100 éléments";
+"settings.section.export" = "Export";
+"settings.section.actions" = "Actions";
+"settings.section.about" = "À propos";
+"settings.about.version" = "Version";
+"settings.loading.pdf" = "Génération du PDF…";
+"settings.section.language" = "Langue";
+
+/* Onboarding */
+"onboarding.capture.title" = "Capture automatique";
+"onboarding.capture.description" = "ClipKeep enregistre tout ce que tu copies — texte, liens, images et code — sans aucune action de ta part.";
+"onboarding.permission.title" = "Permission requise";
+"onboarding.permission.description" = "iOS demande l'autorisation pour que ClipKeep puisse lire ton presse-papiers. Sans elle, rien ne sera capturé.";
+"onboarding.permission.instruction" = "Appuie sur \"Autoriser\" quand iOS le demande.";
+
+/* Detail */
+"detail.section.content" = "Contenu";
+"detail.type.label" = "Type :";
+"detail.date.label" = "Crée le :";
+"detail.lines.label" = "Lignes :";
+"detail.size.label" = "Taille :";
+"detail.size.unit" = "octets";
+
+/* Toasts */
+"toast.image.saved" = "🖼  Image enregistrée";
+"toast.link.saved" = "🔗  Lien enregistré";
+"toast.code.saved" = "{ }  Code enregistré";
+"toast.text.saved" = "📋  Texte enregistré";
+
+/* PDF */
+"pdf.cover.subtitle" = "Historique du presse-papiers";
+"pdf.date.line" = "📅  Exporté le  %@";
+"pdf.count.line" = "📋  %d élément(s)   •   📌  %d épinglé(s)";
+"pdf.footer.line" = "ClipKeep  •  %d élément(s)  •  %@";
+
+/* List items */
+"item.image" = "Image enregistrée";
+"item.lines" = "%d lignes";
+"selection.count" = "%d sélectionné(s)";

@@ -33,23 +33,23 @@ struct ClipActionSheet: View {
 
             // Actions
             VStack(spacing: 0) {
-                actionRow("Copier", icon: "doc.on.doc", color: .accentColor) {
+                actionRow(loc("action.copy"), icon: "doc.on.doc", color: .accentColor) {
                     dismiss()
                     onCopy()
                 }
                 Divider().padding(.leading, 60)
-                actionRow("Ouvrir", icon: "arrow.right.circle", color: .primary) {
+                actionRow(loc("action.open"), icon: "arrow.right.circle", color: .primary) {
                     dismiss()
                     onOpen()
                 }
                 Divider().padding(.leading, 60)
-                actionRow("Partager", icon: "square.and.arrow.up", color: .primary) {
+                actionRow(loc("action.share"), icon: "square.and.arrow.up", color: .primary) {
                     dismiss()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { onShare() }
                 }
                 Divider().padding(.leading, 60)
                 actionRow(
-                    clip.isPinned ? "Désépingler" : "Épingler",
+                    clip.isPinned ? loc("action.unpin") : loc("action.pin"),
                     icon: clip.isPinned ? "pin.slash" : "pin",
                     color: .orange
                 ) {
@@ -57,7 +57,7 @@ struct ClipActionSheet: View {
                     onPin()
                 }
                 Divider().padding(.leading, 60)
-                actionRow("Supprimer", icon: "trash", color: .red) {
+                actionRow(loc("action.delete"), icon: "trash", color: .red) {
                     dismiss()
                     onDelete()
                 }
@@ -81,7 +81,7 @@ struct ClipActionSheet: View {
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
                 if clip.type == .image {
-                    Text("Image enregistrée")
+                    Text(loc("item.image"))
                         .font(.subheadline)
                         .foregroundStyle(.primary)
                 } else {
@@ -162,10 +162,10 @@ struct ClipActionSheet: View {
 
     private var typeLabel: String {
         switch clip.type {
-        case .text:  return clip.detectedSubtype?.label ?? "Texte"
-        case .url:   return "Lien"
-        case .code:  return "Code"
-        case .image: return "Image"
+        case .text:  return clip.detectedSubtype?.label ?? loc("type.text")
+        case .url:   return loc("type.link")
+        case .code:  return loc("type.code")
+        case .image: return loc("type.image")
         }
     }
 }

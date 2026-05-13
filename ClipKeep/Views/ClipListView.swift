@@ -80,8 +80,8 @@ struct ClipListView: View {
                 }
             }
             .navigationTitle(isSelecting
-                ? "\(selectedIDs.count) sélectionné(s)"
-                : "ClipKeep")
+                ? String(format: loc("selection.count"), selectedIDs.count)
+                : loc("title.app"))
             .toolbar { toolbarContent }
             .sheet(isPresented: $showSettings) {
                 SettingsView()
@@ -109,7 +109,7 @@ struct ClipListView: View {
                             ProgressView()
                                 .scaleEffect(1.3)
                                 .tint(.white)
-                            Text("Génération du PDF…")
+                            Text(loc("settings.loading.pdf"))
                                 .font(.subheadline.weight(.medium))
                                 .foregroundColor(.white)
                         }
@@ -131,7 +131,7 @@ struct ClipListView: View {
         }
         .contextMenu {
             Button { copyClip(clip) } label: {
-                Label("Copier", systemImage: "doc.on.doc")
+                Label(loc("action.copy"), systemImage: "doc.on.doc")
             }
             shareMenuButton(for: clip)
             Divider()
@@ -143,7 +143,7 @@ struct ClipListView: View {
                 }
             } label: {
                 Label(
-                    clip.isPinned ? "Désépingler" : "Épingler",
+                    clip.isPinned ? loc("action.unpin") : loc("action.pin"),
                     systemImage: clip.isPinned ? "pin.slash" : "pin"
                 )
             }
@@ -151,7 +151,7 @@ struct ClipListView: View {
             Button(role: .destructive) {
                 withAnimation { modelContext.delete(clip); try? modelContext.save() }
             } label: {
-                Label("Supprimer", systemImage: "trash")
+                Label(loc("action.delete"), systemImage: "trash")
             }
         }
         .swipeActions(edge: .leading, allowsFullSwipe: true) {
@@ -162,7 +162,7 @@ struct ClipListView: View {
                     clipboardStore.syncAll(context: modelContext)
                 }
             } label: {
-                Label(clip.isPinned ? "Désépingler" : "Épingler",
+                Label(clip.isPinned ? loc("action.unpin") : loc("action.pin"),
                       systemImage: clip.isPinned ? "pin.slash" : "pin")
             }
             .tint(.orange)
@@ -171,7 +171,7 @@ struct ClipListView: View {
             Button(role: .destructive) {
                 withAnimation { modelContext.delete(clip); try? modelContext.save() }
             } label: {
-                Label("Supprimer", systemImage: "trash")
+                Label(loc("action.delete"), systemImage: "trash")
             }
         }
     }
@@ -201,18 +201,18 @@ struct ClipListView: View {
     private func shareMenuButton(for clip: ClipItem) -> some View {
         if clip.type == .url, let url = URL(string: clip.textValue) {
             ShareLink(item: url) {
-                Label("Partager", systemImage: "square.and.arrow.up")
+                Label(loc("action.share"), systemImage: "square.and.arrow.up")
             }
         } else if clip.type == .image, let uiImage = UIImage(data: clip.contentData) {
             ShareLink(
                 item: Image(uiImage: uiImage),
-                preview: SharePreview("Image", image: Image(uiImage: uiImage))
+                preview: SharePreview(loc("type.image"), image: Image(uiImage: uiImage))
             ) {
-                Label("Partager", systemImage: "square.and.arrow.up")
+                Label(loc("action.share"), systemImage: "square.and.arrow.up")
             }
         } else {
             ShareLink(item: clip.textValue) {
-                Label("Partager", systemImage: "square.and.arrow.up")
+                Label(loc("action.share"), systemImage: "square.and.arrow.up")
             }
         }
     }
@@ -223,7 +223,7 @@ struct ClipListView: View {
     private var toolbarContent: some ToolbarContent {
         if isSelecting {
             ToolbarItem(placement: .navigationBarLeading) {
-                Button("Annuler") {
+                Button(loc("action.cancel")) {
                     isSelecting = false
                     selectedIDs.removeAll()
                 }
@@ -273,7 +273,7 @@ struct ClipListView: View {
                         Circle()
                             .fill(clipboardStore.isEnabled ? Color.green : Color.red)
                             .frame(width: 7, height: 7)
-                        Text(clipboardStore.isEnabled ? "Actif" : "Inactif")
+                        Text(clipboardStore.isEnabled ? loc("status.active") : loc("status.inactive"))
                             .font(.caption2)
                             .foregroundColor(.secondary)
                     }
@@ -303,27 +303,27 @@ struct ClipListView: View {
         let fmt = DateFormatter()
         fmt.dateStyle = .short
         fmt.timeStyle = .short
-        fmt.locale = Locale(identifier: "fr_FR")
+        fmt.locale = Locale(identifier: LanguageManager.shared.current)
 
         return clips.map { clip in
             let icon: String
             let label: String
             switch clip.type {
             case .url:
-                icon = "🔗"; label = "Lien"
+                icon = "🔗"; label = loc("type.link")
             case .code:
-                icon = "{ }"; label = "Code"
+                icon = "{ }"; label = loc("type.code")
             case .text:
                 switch clip.detectedSubtype {
-                case .email:    icon = "✉️";  label = "Email"
-                case .phone:    icon = "📞"; label = "Téléphone"
-                case .date:     icon = "📅"; label = "Date"
-                case .colorHex: icon = "🎨"; label = "Couleur"
-                case .address:  icon = "📍"; label = "Adresse"
-                case nil:       icon = "📄"; label = "Texte"
+                case .email:    icon = "✉️";  label = loc("type.email")
+                case .phone:    icon = "📞"; label = loc("type.phone")
+                case .date:     icon = "📅"; label = loc("type.date")
+                case .colorHex: icon = "🎨"; label = loc("type.color")
+                case .address:  icon = "📍"; label = loc("type.address")
+                case nil:       icon = "📄"; label = loc("type.text")
                 }
             case .image:
-                icon = "🖼"; label = "Image"
+                icon = "🖼"; label = loc("type.image")
             }
             return "\(icon) \(label)  ·  \(fmt.string(from: clip.createdAt))\n\(clip.textValue)"
         }.joined(separator: "\n\n────────\n\n")
@@ -373,10 +373,10 @@ struct ClipListView: View {
             Image(systemName: "doc.on.clipboard")
                 .font(.system(size: 60))
                 .foregroundColor(.gray)
-            Text("Aucun élément sauvegardé")
+            Text(loc("empty.no.items"))
                 .font(.title3)
                 .foregroundColor(.gray)
-            Text("Copiez du texte, une image ou un lien pour les voir ici")
+            Text(loc("empty.no.items.subtitle"))
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -389,10 +389,10 @@ struct ClipListView: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 40))
                 .foregroundColor(.gray)
-            Text("Aucun résultat")
+            Text(loc("empty.no.results"))
                 .font(.title3)
                 .foregroundColor(.gray)
-            Text("Essayez un autre terme ou filtre")
+            Text(loc("empty.no.results.subtitle"))
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
@@ -412,7 +412,7 @@ private struct SearchField: View {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.secondary)
                     .font(.subheadline)
-                TextField("Rechercher dans l'historique…", text: $text)
+                TextField(loc("search.placeholder"), text: $text)
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
                     .focused($focused)
@@ -430,7 +430,7 @@ private struct SearchField: View {
             .cornerRadius(10)
 
             if focused || !text.isEmpty {
-                Button("Annuler") {
+                Button(loc("action.cancel")) {
                     text = ""
                     focused = false
                 }
@@ -447,13 +447,15 @@ private struct SearchField: View {
 private struct FilterBar: View {
     @Binding var selected: ClipType?
 
-    private let filters: [(label: String, icon: String, type: ClipType?)] = [
-        ("Tout",   "tray.full",                               nil),
-        ("Texte",  "doc.text",                                .text),
-        ("Code",   "chevron.left.forwardslash.chevron.right", .code),
-        ("Images", "photo",                                   .image),
-        ("Liens",  "link",                                    .url)
-    ]
+    private var filters: [(label: String, icon: String, type: ClipType?)] {
+        [
+            (loc("filter.all"),   "tray.full",                               nil),
+            (loc("filter.text"),  "doc.text",                                .text),
+            (loc("filter.code"),  "chevron.left.forwardslash.chevron.right", .code),
+            (loc("filter.image"), "photo",                                   .image),
+            (loc("filter.link"),  "link",                                    .url)
+        ]
+    }
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {

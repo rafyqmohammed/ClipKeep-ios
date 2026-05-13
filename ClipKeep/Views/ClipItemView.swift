@@ -52,11 +52,11 @@ struct ClipItemView: View {
                     Text(firstLine)
                         .font(.system(.subheadline, design: .monospaced))
                         .lineLimit(1)
-                    Text("\(lineCount) lignes")
+                    Text(String(format: loc("item.lines"), lineCount))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 } else {
-                    Text(item.type == .image ? "Image enregistrée" : item.textValue)
+                    Text(item.type == .image ? loc("item.image") : item.textValue)
                         .lineLimit(2)
                 }
 
@@ -123,18 +123,18 @@ struct ClipItemView: View {
 
         if let sub = item.detectedSubtype {
             switch sub {
-            case .email:    label = "Email";     icon = sub.icon; color = .blue
-            case .phone:    label = "Téléphone"; icon = sub.icon; color = .green
-            case .date:     label = "Date";      icon = sub.icon; color = .orange
-            case .colorHex: label = "Couleur";   icon = sub.icon; color = .pink
-            case .address:  label = "Adresse";   icon = sub.icon; color = .teal
+            case .email:    label = loc("type.email");   icon = sub.icon; color = .blue
+            case .phone:    label = loc("type.phone");   icon = sub.icon; color = .green
+            case .date:     label = loc("type.date");    icon = sub.icon; color = .orange
+            case .colorHex: label = loc("type.color");   icon = sub.icon; color = .pink
+            case .address:  label = loc("type.address"); icon = sub.icon; color = .teal
             }
         } else {
             switch item.type {
-            case .code:  label = "Code";  icon = "chevron.left.forwardslash.chevron.right"; color = .purple
-            case .url:   label = "Lien";  icon = "link";      color = .orange
-            case .image: label = "Image"; icon = "photo";     color = .green
-            case .text:  label = "Texte"; icon = "doc.text";  color = .blue
+            case .code:  label = loc("type.code");  icon = "chevron.left.forwardslash.chevron.right"; color = .purple
+            case .url:   label = loc("type.link");  icon = "link";     color = .orange
+            case .image: label = loc("type.image"); icon = "photo";    color = .green
+            case .text:  label = loc("type.text");  icon = "doc.text"; color = .blue
             }
         }
 
