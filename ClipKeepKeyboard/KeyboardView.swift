@@ -1,11 +1,22 @@
 import SwiftUI
 import Combine
 
+private func kloc(_ key: String) -> String {
+    let lang = UserDefaults(suiteName: "group.com.rafyq.ClipKeep")?.string(forKey: "app_language") ?? "fr"
+    guard let path = Bundle.main.path(forResource: lang, ofType: "lproj"),
+          let bundle = Bundle(path: path) else {
+        return Bundle.main.localizedString(forKey: key, value: key, table: nil)
+    }
+    return bundle.localizedString(forKey: key, value: key, table: nil)
+}
+
 private enum ClipTypeFilter: String, CaseIterable {
-    case all  = "Tout"
-    case text = "Texte"
-    case url  = "Lien"
-    case code = "Code"
+    case all  = "filter.all"
+    case text = "filter.text"
+    case url  = "filter.link"
+    case code = "filter.code"
+
+    var label: String { kloc(rawValue) }
 }
 
 struct KeyboardView: View {
@@ -64,7 +75,7 @@ struct KeyboardView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 6) {
                 ForEach(ClipTypeFilter.allCases, id: \.self) { filter in
-                    Button(filter.rawValue) { activeFilter = filter }
+                    Button(filter.label) { activeFilter = filter }
                         .font(.caption)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 4)
@@ -84,7 +95,7 @@ struct KeyboardView: View {
         Group {
             if filtered.isEmpty {
                 Spacer()
-                Text(activeFilter == .all ? "Aucun clip enregistré" : "Aucun résultat")
+                Text(activeFilter == .all ? kloc("empty.no.clips") : kloc("empty.no.results"))
                     .foregroundStyle(.secondary)
                     .font(.subheadline)
                 Spacer()

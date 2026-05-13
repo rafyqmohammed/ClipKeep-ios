@@ -27,11 +27,11 @@ enum ClipSubtype: String {
 
     var label: String {
         switch self {
-        case .email:    return "Email"
-        case .phone:    return "Téléphone"
-        case .date:     return "Date"
-        case .colorHex: return "Couleur"
-        case .address:  return "Adresse"
+        case .email:    return loc("type.email")
+        case .phone:    return loc("type.phone")
+        case .date:     return loc("type.date")
+        case .colorHex: return loc("type.color")
+        case .address:  return loc("type.address")
         }
     }
 }

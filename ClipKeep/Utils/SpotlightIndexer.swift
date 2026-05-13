@@ -50,9 +50,9 @@ enum SpotlightIndexer {
     private static func clipTitle(_ clip: ClipItem) -> String {
         switch clip.type {
         case .url:   return clip.textValue
-        case .code:  return "Code — " + String(clip.textValue.prefix(50))
+        case .code:  return loc("type.code") + " — " + String(clip.textValue.prefix(50))
         case .text:  return String(clip.textValue.prefix(60))
-        case .image: return "Image"
+        case .image: return loc("type.image")
         }
     }
 }

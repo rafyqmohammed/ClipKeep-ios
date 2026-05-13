@@ -27,6 +27,33 @@ extension ClipItem {
     }
 }
 
+// MARK: - Localized strings captured on main thread
+
+struct PDFLocalizedStrings: Sendable {
+    let coverSubtitle: String
+    let dateLine: String
+    let countLine: String
+    let footerLine: String
+    let locale: String
+    let typeImage: String
+    let typeLink: String
+    let typeCode: String
+    let typeText: String
+
+    @MainActor
+    init() {
+        coverSubtitle = loc("pdf.cover.subtitle")
+        dateLine      = loc("pdf.date.line")
+        countLine     = loc("pdf.count.line")
+        footerLine    = loc("pdf.footer.line")
+        locale        = LanguageManager.shared.current
+        typeImage     = loc("type.image")
+        typeLink      = loc("type.link")
+        typeCode      = loc("type.code")
+        typeText      = loc("type.text")
+    }
+}
+
 // MARK: - Generator
 
 struct PDFExporter {
@@ -35,8 +62,9 @@ struct PDFExporter {
     @MainActor
     static func generate(from clips: [ClipItem]) async -> Data {
         let snapshots = clips.map(\.pdfSnapshot)
+        let strings   = PDFLocalizedStrings()
         return await Task.detached(priority: .userInitiated) {
-            buildPDF(from: snapshots)
+            buildPDF(from: snapshots, strings: strings)
         }.value
     }
 
@@ -94,12 +122,13 @@ struct PDFExporter {
         }
     }
 
-    private static func label(_ type: ClipType, _ sub: ClipSubtype?) -> String {
+    private static func label(_ type: ClipType, _ sub: ClipSubtype?,
+                              strings: PDFLocalizedStrings) -> String {
         switch type {
-        case .image: return "Image"
-        case .url:   return "Lien"
-        case .code:  return "Code"
-        case .text:  return sub?.label ?? "Texte"
+        case .image: return strings.typeImage
+        case .url:   return strings.typeLink
+        case .code:  return strings.typeCode
+        case .text:  return sub?.label ?? strings.typeText
         }
     }
 
@@ -128,7 +157,7 @@ struct PDFExporter {
 
     // MARK: - PDF render (background thread)
 
-    private static func buildPDF(from clips: [PDFClipData]) -> Data {
+    private static func buildPDF(from clips: [PDFClipData], strings: PDFLocalizedStrings) -> Data {
         let pageW:   CGFloat = 595
         let pageH:   CGFloat = 842
         let mg:      CGFloat = 36
@@ -181,7 +210,7 @@ struct PDFExporter {
 
             let fmt = DateFormatter()
             fmt.dateStyle = .long; fmt.timeStyle = .short
-            fmt.locale = Locale(identifier: "fr_FR")
+            fmt.locale = Locale(identifier: strings.locale)
 
             // ── cover ────────────────────────────────────────────────────
             newPage()
@@ -191,15 +220,15 @@ struct PDFExporter {
             y += 14
 
             inline("ClipKeep", font: .boldSystemFont(ofSize: 32), gap: 4)
-            inline("Historique du presse-papiers",
+            inline(strings.coverSubtitle,
                    font: .systemFont(ofSize: 15), color: .systemGray, gap: 16)
             rule(atY: y, from: mg, to: mg + cw, color: UIColor(white: 0.85, alpha: 1), lw: 1)
             y += 14
 
             let meta = UIFont.systemFont(ofSize: 11)
-            inline("📅  Exporté le  \(fmt.string(from: Date()))",
+            inline(String(format: strings.dateLine, fmt.string(from: Date())),
                    font: meta, color: .systemGray, gap: 6)
-            inline("📋  \(clips.count) élément(s)   •   📌  \(clips.filter(\.isPinned).count) épinglé(s)",
+            inline(String(format: strings.countLine, clips.count, clips.filter(\.isPinned).count),
                    font: meta, color: .systemGray, gap: 24)
             rule(atY: y, from: mg, to: mg + cw, color: UIColor(white: 0.85, alpha: 1), lw: 1)
             y += 20
@@ -257,7 +286,7 @@ struct PDFExporter {
                      color: accent.withAlphaComponent(0.18))
 
                 let hFont  = UIFont.systemFont(ofSize: 10, weight: .semibold)
-                let hLabel = "\(icon(clipType, subtype))  \(label(clipType, subtype))  •  \(fmt.string(from: clip.createdAt))\(clip.isPinned ? "  📌" : "")"
+                let hLabel = "\(icon(clipType, subtype))  \(label(clipType, subtype, strings: strings))  •  \(fmt.string(from: clip.createdAt))\(clip.isPinned ? "  📌" : "")"
                 let hH     = measure(hLabel, font: hFont, width: cw - 52)
                 put(hLabel, font: hFont, color: accent,
                     x: mg + 12, at: y + (hdrH - hH) / 2, width: cw - 52, height: hH)
@@ -296,7 +325,7 @@ struct PDFExporter {
             let footerY = pageH - 22
             rule(atY: footerY - 6, from: mg, to: mg + cw, color: UIColor(white: 0.88, alpha: 1))
             NSAttributedString(
-                string: "ClipKeep  •  \(clips.count) élément(s)  •  \(fmt.string(from: Date()))",
+                string: String(format: strings.footerLine, clips.count, fmt.string(from: Date())),
                 attributes: [.font: UIFont.systemFont(ofSize: 8),
                              .foregroundColor: UIColor.lightGray]
             ).draw(at: CGPoint(x: mg, y: footerY))

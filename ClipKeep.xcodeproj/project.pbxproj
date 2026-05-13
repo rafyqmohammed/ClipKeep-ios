@@ -54,9 +54,9 @@
 		9D0640A52FAA97BA00F07094 /* ClipKeepKeyboard.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ClipKeepKeyboard.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D53FF102FABD6050035EA8F /* SharedClipItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedClipItem.swift; sourceTree = "<group>"; };
 		9D53FF112FABD6050035EA8F /* SharedClipStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedClipStore.swift; sourceTree = "<group>"; };
-		9DBCD91C2FB26EDC00B71544 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		9D60C0472F83A05700E8F47E /* ClipKeep.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClipKeep.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DBCD9052FB26EDC00B71544 /* ClipKeepShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ClipKeepShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		9DBCD91C2FB26EDC00B71544 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -255,6 +255,9 @@
 			knownRegions = (
 				en,
 				Base,
+				fr,
+				ar,
+				es,
 			);
 			mainGroup = 9D60C03E2F83A05700E8F47E;
 			minimizedProjectReferenceProxies = 1;

@@ -1,0 +1,111 @@
+/* Navigation */
+"title.app" = "ClipKeep";
+"title.settings" = "الإعدادات";
+"title.details" = "التفاصيل";
+
+/* Actions */
+"action.copy" = "نسخ";
+"action.copied" = "تم النسخ!";
+"action.share" = "مشاركة";
+"action.pin" = "تثبيت";
+"action.unpin" = "إلغاء التثبيت";
+"action.delete" = "حذف";
+"action.cancel" = "إلغاء";
+"action.close" = "إغلاق";
+"action.next" = "التالي";
+"action.start" = "ابدأ";
+"action.allow" = "سماح";
+"action.later" = "لاحقاً";
+"action.open" = "فتح";
+"action.confirm.delete" = "مسح";
+"action.export.pdf" = "تصدير PDF";
+"action.clear.history" = "مسح كل السجل";
+
+/* Filters */
+"filter.all" = "الكل";
+"filter.text" = "نص";
+"filter.code" = "كود";
+"filter.image" = "صور";
+"filter.link" = "روابط";
+
+/* Types */
+"type.text" = "نص";
+"type.code" = "كود";
+"type.link" = "رابط";
+"type.image" = "صورة";
+"type.email" = "بريد إلكتروني";
+"type.phone" = "هاتف";
+"type.date" = "تاريخ";
+"type.color" = "لون";
+"type.address" = "عنوان";
+
+/* Status */
+"status.active" = "نشط";
+"status.inactive" = "غير نشط";
+
+/* Empty states */
+"empty.no.items" = "لا توجد عناصر محفوظة";
+"empty.no.items.subtitle" = "انسخ نصاً أو صورة أو رابطاً لرؤيتها هنا";
+"empty.no.results" = "لا نتائج";
+"empty.no.results.subtitle" = "جرّب مصطلحاً أو فلتراً مختلفاً";
+"search.placeholder" = "البحث في السجل…";
+
+/* Alerts */
+"alert.permission.title" = "تفعيل الالتقاط التلقائي";
+"alert.permission.message" = "لتجنب الطلبات المتكررة وتفعيل الالتقاط التلقائي: الإعدادات > ClipKeep > اللصق من تطبيقات أخرى > سماح";
+"alert.delete.title" = "تأكيد الحذف";
+"alert.delete.message" = "سيحذف هذا الإجراء جميع العناصر المحفوظة. لا يمكن التراجع عن هذه العملية.";
+
+/* Settings */
+"settings.section.capture" = "الالتقاط";
+"settings.capture.enabled" = "الالتقاط مفعّل";
+"settings.capture.disabled" = "الالتقاط معطّل";
+"settings.section.info" = "المعلومات";
+"settings.info.saved" = "العناصر المحفوظة";
+"settings.info.pinned" = "العناصر المثبّتة";
+"settings.section.storage" = "التخزين";
+"settings.storage.retention" = "مدة الاحتفاظ";
+"settings.storage.limit" = "حد العناصر";
+"settings.storage.unlimited" = "غير محدود";
+"settings.storage.7days" = "7 أيام";
+"settings.storage.30days" = "30 يوماً";
+"settings.storage.50items" = "50 عنصراً";
+"settings.storage.100items" = "100 عنصر";
+"settings.section.export" = "تصدير";
+"settings.section.actions" = "الإجراءات";
+"settings.section.about" = "حول";
+"settings.about.version" = "الإصدار";
+"settings.loading.pdf" = "جارٍ إنشاء PDF…";
+"settings.section.language" = "اللغة";
+
+/* Onboarding */
+"onboarding.capture.title" = "الالتقاط التلقائي";
+"onboarding.capture.description" = "يحفظ ClipKeep كل ما تنسخه — نصوص وروابط وصور وكود — دون أي إجراء منك.";
+"onboarding.permission.title" = "إذن مطلوب";
+"onboarding.permission.description" = "يطلب iOS الإذن لكي يتمكن ClipKeep من قراءة الحافظة. بدونه لن يتم التقاط أي شيء.";
+"onboarding.permission.instruction" = "اضغط على \"سماح\" عندما يطلب iOS ذلك.";
+
+/* Detail */
+"detail.section.content" = "المحتوى";
+"detail.type.label" = "النوع:";
+"detail.date.label" = "تاريخ الإنشاء:";
+"detail.lines.label" = "الأسطر:";
+"detail.size.label" = "الحجم:";
+"detail.size.unit" = "بايت";
+
+/* Toasts */
+"toast.image.saved" = "🖼  تم حفظ الصورة";
+"toast.link.saved" = "🔗  تم حفظ الرابط";
+"toast.code.saved" = "{ }  تم حفظ الكود";
+"toast.text.saved" = "📋  تم حفظ النص";
+
+/* PDF */
+"pdf.cover.subtitle" = "سجل الحافظة";
+"pdf.date.line" = "📅  تم التصدير في  %@";
+"pdf.count.line" = "📋  %d عنصر   •   📌  %d مثبت";
+"pdf.footer.line" = "ClipKeep  •  %d عنصر  •  %@";
+
+/* List items */
+"item.image" = "صورة محفوظة";
+"item.lines" = "%d سطراً";
+"selection.count" = "%d محدد";

@@ -1,8 +1,3 @@
-//
-//  OnboardingView.swift
-//  ClipKeep
-//
-
 import SwiftUI
 
 struct OnboardingView: View {
@@ -19,34 +14,26 @@ struct OnboardingView: View {
         .ignoresSafeArea()
     }
 
-    // MARK: - Page 1 : capture automatique
-
     private var page1: some View {
         VStack(spacing: 0) {
             Spacer()
-
             Image(systemName: "doc.on.clipboard.fill")
                 .font(.system(size: 80))
                 .foregroundStyle(.blue.gradient)
                 .padding(.bottom, 36)
-
-            Text("Capture automatique")
+            Text(loc("onboarding.capture.title"))
                 .font(.title.bold())
                 .padding(.bottom, 12)
-
-            Text("ClipKeep enregistre tout ce que tu copies — texte, liens, images et code — sans aucune action de ta part.")
+            Text(loc("onboarding.capture.description"))
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
-
             Spacer()
-
             Button {
                 withAnimation { page = 1 }
             } label: {
-                Text("Suivant")
-                    .frame(maxWidth: .infinity)
+                Text(loc("action.next")).frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
@@ -55,41 +42,32 @@ struct OnboardingView: View {
         }
     }
 
-    // MARK: - Page 2 : permission
-
     private var page2: some View {
         VStack(spacing: 0) {
             Spacer()
-
             Image(systemName: "hand.raised.fill")
                 .font(.system(size: 80))
                 .foregroundStyle(.orange.gradient)
                 .padding(.bottom, 36)
-
-            Text("Permission requise")
+            Text(loc("onboarding.permission.title"))
                 .font(.title.bold())
                 .padding(.bottom, 12)
-
-            Text("iOS demande l'autorisation pour que ClipKeep puisse lire ton presse-papiers. Sans elle, rien ne sera capturé.")
+            Text(loc("onboarding.permission.description"))
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
                 .padding(.bottom, 16)
-
-            Label("Appuie sur \"Autoriser\" quand iOS le demande.", systemImage: "checkmark.circle")
+            Label(loc("onboarding.permission.instruction"), systemImage: "checkmark.circle")
                 .font(.subheadline.weight(.medium))
                 .foregroundColor(.orange)
                 .padding(.horizontal, 40)
                 .multilineTextAlignment(.center)
-
             Spacer()
-
             Button {
                 onDone()
             } label: {
-                Text("Commencer")
-                    .frame(maxWidth: .infinity)
+                Text(loc("action.start")).frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)

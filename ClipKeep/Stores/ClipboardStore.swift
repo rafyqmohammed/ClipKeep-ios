@@ -190,10 +190,10 @@ class ClipboardStore {
 
     private func showCaptureToast(for type: ClipType) {
         switch type {
-        case .image: captureToast = "🖼  Image enregistrée"
-        case .url:   captureToast = "🔗  Lien enregistré"
-        case .code:  captureToast = "{ }  Code enregistré"
-        case .text:  captureToast = "📋  Texte enregistré"
+        case .image: captureToast = loc("toast.image.saved")
+        case .url:   captureToast = loc("toast.link.saved")
+        case .code:  captureToast = loc("toast.code.saved")
+        case .text:  captureToast = loc("toast.text.saved")
         }
         Task { @MainActor [weak self] in
             try? await Task.sleep(for: .seconds(2.5))

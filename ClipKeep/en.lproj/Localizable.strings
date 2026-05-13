@@ -1,0 +1,111 @@
+/* Navigation */
+"title.app" = "ClipKeep";
+"title.settings" = "Settings";
+"title.details" = "Details";
+
+/* Actions */
+"action.copy" = "Copy";
+"action.copied" = "Copied!";
+"action.share" = "Share";
+"action.pin" = "Pin";
+"action.unpin" = "Unpin";
+"action.delete" = "Delete";
+"action.cancel" = "Cancel";
+"action.close" = "Close";
+"action.next" = "Next";
+"action.start" = "Get Started";
+"action.allow" = "Allow";
+"action.later" = "Later";
+"action.open" = "Open";
+"action.confirm.delete" = "Clear";
+"action.export.pdf" = "Export as PDF";
+"action.clear.history" = "Clear all history";
+
+/* Filters */
+"filter.all" = "All";
+"filter.text" = "Text";
+"filter.code" = "Code";
+"filter.image" = "Images";
+"filter.link" = "Links";
+
+/* Types */
+"type.text" = "Text";
+"type.code" = "Code";
+"type.link" = "Link";
+"type.image" = "Image";
+"type.email" = "Email";
+"type.phone" = "Phone";
+"type.date" = "Date";
+"type.color" = "Color";
+"type.address" = "Address";
+
+/* Status */
+"status.active" = "Active";
+"status.inactive" = "Inactive";
+
+/* Empty states */
+"empty.no.items" = "No saved items";
+"empty.no.items.subtitle" = "Copy text, an image, or a link to see them here";
+"empty.no.results" = "No results";
+"empty.no.results.subtitle" = "Try a different term or filter";
+"search.placeholder" = "Search history…";
+
+/* Alerts */
+"alert.permission.title" = "Enable automatic capture";
+"alert.permission.message" = "To avoid repeated prompts and enable auto-capture: Settings > ClipKeep > Paste from Other Apps > Allow";
+"alert.delete.title" = "Confirm deletion";
+"alert.delete.message" = "This action will delete all saved items. This cannot be undone.";
+
+/* Settings */
+"settings.section.capture" = "Capture";
+"settings.capture.enabled" = "Capture enabled";
+"settings.capture.disabled" = "Capture disabled";
+"settings.section.info" = "Information";
+"settings.info.saved" = "Saved items";
+"settings.info.pinned" = "Pinned items";
+"settings.section.storage" = "Storage";
+"settings.storage.retention" = "Retention period";
+"settings.storage.limit" = "Item limit";
+"settings.storage.unlimited" = "Unlimited";
+"settings.storage.7days" = "7 days";
+"settings.storage.30days" = "30 days";
+"settings.storage.50items" = "50 items";
+"settings.storage.100items" = "100 items";
+"settings.section.export" = "Export";
+"settings.section.actions" = "Actions";
+"settings.section.about" = "About";
+"settings.about.version" = "Version";
+"settings.loading.pdf" = "Generating PDF…";
+"settings.section.language" = "Language";
+
+/* Onboarding */
+"onboarding.capture.title" = "Automatic Capture";
+"onboarding.capture.description" = "ClipKeep saves everything you copy — text, links, images, and code — without any action required.";
+"onboarding.permission.title" = "Permission Required";
+"onboarding.permission.description" = "iOS asks for permission so ClipKeep can read your clipboard. Without it, nothing will be captured.";
+"onboarding.permission.instruction" = "Tap \"Allow\" when iOS asks.";
+
+/* Detail */
+"detail.section.content" = "Content";
+"detail.type.label" = "Type:";
+"detail.date.label" = "Created:";
+"detail.lines.label" = "Lines:";
+"detail.size.label" = "Size:";
+"detail.size.unit" = "bytes";
+
+/* Toasts */
+"toast.image.saved" = "🖼  Image saved";
+"toast.link.saved" = "🔗  Link saved";
+"toast.code.saved" = "{ }  Code saved";
+"toast.text.saved" = "📋  Text saved";
+
+/* PDF */
+"pdf.cover.subtitle" = "Clipboard History";
+"pdf.date.line" = "📅  Exported on  %@";
+"pdf.count.line" = "📋  %d item(s)   •   📌  %d pinned";
+"pdf.footer.line" = "ClipKeep  •  %d item(s)  •  %@";
+
+/* List items */
+"item.image" = "Saved image";
+"item.lines" = "%d lines";
+"selection.count" = "%d selected";
