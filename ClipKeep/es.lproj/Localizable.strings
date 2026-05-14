@@ -109,3 +109,5 @@
 "item.image" = "Imagen guardada";
 "item.lines" = "%d líneas";
 "selection.count" = "%d seleccionado(s)";
+"alert.fullaccess.title" = "Activar Acceso completo";
+"alert.fullaccess.message" = "Para sincronizar los anclajes desde el teclado: Ajustes > General > Teclado > Teclados > ClipKeep > Acceso completo > Permitir";

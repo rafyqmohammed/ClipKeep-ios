@@ -4,3 +4,4 @@
 "filter.code" = "Código";
 "empty.no.clips" = "Sin clips guardados";
 "empty.no.results" = "Sin resultados";
+"keyboard.full.access.required" = "Activar Acceso completo en Ajustes → Teclados → ClipKeep";
