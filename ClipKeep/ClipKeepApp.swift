@@ -115,7 +115,10 @@ struct ClipKeepApp: App {
                 }
             }
 
-            // Tentative 2 : clips capturés par le clavier pendant la session de frappe.
+            // Tentative 2 : épingles posées depuis le clavier.
+            store.applyPendingPinChanges(context: context)
+
+            // Tentative 3 : clips capturés par le clavier pendant la session de frappe.
             store.processCapturedClips(context: context)
             store.syncAll(context: context)
 

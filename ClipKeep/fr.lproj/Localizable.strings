@@ -109,3 +109,5 @@
 "item.image" = "Image enregistrée";
 "item.lines" = "%d lignes";
 "selection.count" = "%d sélectionné(s)";
+"alert.fullaccess.title" = "Activer l'Accès complet";
+"alert.fullaccess.message" = "Pour synchroniser les épingles depuis le clavier : Réglages > Général > Clavier > Claviers > ClipKeep > Accès complet > Autoriser";

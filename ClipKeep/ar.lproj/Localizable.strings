@@ -109,3 +109,5 @@
 "item.image" = "صورة محفوظة";
 "item.lines" = "%d سطراً";
 "selection.count" = "%d محدد";
+"alert.fullaccess.title" = "تفعيل الوصول الكامل";
+"alert.fullaccess.message" = "لمزامنة التثبيت من لوحة المفاتيح: الإعدادات > عام > لوحة المفاتيح > لوحات المفاتيح > ClipKeep > الوصول الكامل > السماح";

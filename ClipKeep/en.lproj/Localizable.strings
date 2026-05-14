@@ -109,3 +109,5 @@
 "item.image" = "Saved image";
 "item.lines" = "%d lines";
 "selection.count" = "%d selected";
+"alert.fullaccess.title" = "Enable Full Access";
+"alert.fullaccess.message" = "To sync pins from the keyboard: Settings > General > Keyboard > Keyboards > ClipKeep > Full Access > Allow";

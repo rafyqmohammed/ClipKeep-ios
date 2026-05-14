@@ -21,6 +21,7 @@ private enum ClipTypeFilter: String, CaseIterable {
 
 struct KeyboardView: View {
     let needsNextKeyboard: Bool
+    let hasFullAccess: Bool
     let onInsert: (String) -> Void
     let onDelete: () -> Void
     let onNextKeyboard: () -> Void
@@ -45,6 +46,9 @@ struct KeyboardView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            if !hasFullAccess {
+                fullAccessBanner
+            }
             typeFilter
             clipsList
             bottomBar
@@ -67,6 +71,23 @@ struct KeyboardView: View {
                 return clip
             }
         }
+    }
+
+    // MARK: — Full Access banner
+
+    private var fullAccessBanner: some View {
+        HStack(spacing: 6) {
+            Image(systemName: "lock.fill")
+                .font(.caption2)
+            Text(kloc("keyboard.full.access.required"))
+                .font(.caption2)
+                .lineLimit(1)
+        }
+        .foregroundStyle(.white)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+        .frame(maxWidth: .infinity)
+        .background(Color.orange)
     }
 
     // MARK: — Type filter pills

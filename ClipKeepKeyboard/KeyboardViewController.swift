@@ -17,6 +17,16 @@ class KeyboardViewController: UIInputViewController {
         setupKeyboardView()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // Confirme l'accès complet dans l'App Group pour que ClipKeep
+        // puisse afficher l'alerte si ce n'est pas activé.
+        if hasFullAccess {
+            UserDefaults(suiteName: "group.com.rafyq.ClipKeep")?
+                .set(true, forKey: "keyboard_full_access_ok")
+        }
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         // Initialise le compteur à l'apparition pour ne pas capturer
@@ -47,6 +57,7 @@ class KeyboardViewController: UIInputViewController {
     private func setupKeyboardView() {
         let keyboardView = KeyboardView(
             needsNextKeyboard: needsInputModeSwitchKey,
+            hasFullAccess: hasFullAccess,
             onInsert: { [weak self] text in
                 self?.textDocumentProxy.insertText(text)
             },

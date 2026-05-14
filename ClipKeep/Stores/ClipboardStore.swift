@@ -30,11 +30,33 @@ class ClipboardStore {
         set { UserDefaults.standard.set(newValue, forKey: pastePromptKey) }
     }
 
+    // Alerte "Accès complet clavier" — même logique que shouldShowPastePermissionPrompt.
+    // Affichée une seule fois si le clavier n'a jamais confirmé son accès complet.
+    private let fullAccessPromptKey  = "didShowFullAccessPrompt"
+    private let fullAccessConfirmKey = "keyboard_full_access_ok"
+    var shouldShowFullAccessPrompt = false
+
+    private var didShowFullAccessPrompt: Bool {
+        get { UserDefaults.standard.bool(forKey: fullAccessPromptKey) }
+        set { UserDefaults.standard.set(newValue, forKey: fullAccessPromptKey) }
+    }
+
+    private func checkFullAccessStatus() {
+        guard !didShowFullAccessPrompt else { return }
+        let confirmed = UserDefaults(suiteName: "group.com.rafyq.ClipKeep")?
+            .bool(forKey: fullAccessConfirmKey) ?? false
+        if !confirmed {
+            shouldShowFullAccessPrompt = true
+            didShowFullAccessPrompt = true
+        }
+    }
+
     // Appelé au lancement de l'app et à chaque retour au premier plan.
     // Ordre : épingles en attente → clips capturés → sync du fichier partagé.
     func initialSync(context: ModelContext) {
         applyPendingPinChanges(context: context)
         processCapturedClips(context: context)
+        checkFullAccessStatus()
         let descriptor = FetchDescriptor<ClipItem>(sortBy: [SortDescriptor(\ClipItem.createdAt, order: .reverse)])
         let all = (try? context.fetch(descriptor)) ?? []
         syncToSharedStore(all)
@@ -84,11 +106,12 @@ class ClipboardStore {
     // Lit pending_pins.json, trouve les ClipItems correspondants dans SwiftData,
     // bascule leur isPinned, puis sauvegarde. Appelé à chaque tick du timer
     // et à chaque activation de la scène pour ne rater aucune épingle du clavier.
-    private func applyPendingPinChanges(context: ModelContext) {
+    @discardableResult
+    func applyPendingPinChanges(context: ModelContext) -> Bool {
         let pendingIDs = SharedClipStore.consumePendingPinToggles()
-        guard !pendingIDs.isEmpty else { return }
+        guard !pendingIDs.isEmpty else { return false }
         let descriptor = FetchDescriptor<ClipItem>()
-        guard let all = try? context.fetch(descriptor) else { return }
+        guard let all = try? context.fetch(descriptor) else { return false }
         var changed = false
         for id in pendingIDs {
             if let item = all.first(where: { $0.id == id }) {
@@ -96,7 +119,11 @@ class ClipboardStore {
                 changed = true
             }
         }
-        if changed { try? context.save() }
+        if changed {
+            try? context.save()
+            syncToSharedStore(all)
+        }
+        return changed
     }
 
     // Vérifie le presse-papiers toutes les 1,5 secondes.
